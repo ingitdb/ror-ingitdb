@@ -1,0 +1,93 @@
+{
+  "artifacts": [
+    {
+      "bytes": 238563328,
+      "kind": "reconstructed",
+      "path": "ror.sqlite",
+      "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
+    },
+    {
+      "bytes": 1567,
+      "path": "model/ror.modelspec.json",
+      "sha256": "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"
+    },
+    {
+      "bytes": 1412,
+      "path": "model/ror.modelspec.hcl",
+      "sha256": "e0bac3b33bbc710adade33732224169643a5ba3a37d5110a8f6140a3bcccbbda"
+    },
+    {
+      "bytes": 2535,
+      "path": "model/ror.meaning.yaml",
+      "sha256": "70e54d63b0d564edc73149154f84374cdff30a17b8631c56ecab06dd93d452e9"
+    },
+    {
+      "bytes": 764,
+      "path": "source/ror-v2.13.json",
+      "sha256": "492f57ee01f5410852f1118e19d94698258e7494cc72a1e6f4a30e5f9da5caea"
+    },
+    {
+      "bytes": 1116,
+      "path": "DATA-LICENSE.md",
+      "sha256": "39d8853e3c9f9a7a96ea77edd1afe52ad25902f34a30855ad53c2c1aed62443b"
+    },
+    {
+      "bytes": 6693,
+      "path": "source/validation.json",
+      "sha256": "06aa20ec30551b5eeeca02acdec95da3ebcfdd92524e3048e9d9f6a47d00c6fe"
+    },
+    {
+      "bytes": 20971520,
+      "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001",
+      "sha256": "dcbe231796b5d51307adb81ad5623b509ac5f055cd7a773f1706fbe0af1aa2c0"
+    },
+    {
+      "bytes": 16933001,
+      "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002",
+      "sha256": "bdc133c44b8c27552c0089495cf2d8ad9bcda0722cc2c092fb3498acf078b572"
+    }
+  ],
+  "counts": {
+    "locations": 141722,
+    "null_location_ids": 0,
+    "organizations": 141528,
+    "organizations_with_multiple_locations": 138,
+    "organizations_without_locations": 0,
+    "relationship_targets_absent": 0,
+    "relationships": 72747,
+    "unique_geonames_ids": 19729
+  },
+  "dataset_role": "unchanged native source projection; serving adapter has separate future checksums",
+  "generator": {
+    "repository": "https://github.com/ingitdb/ror-ingitdb",
+    "revision": "782df3e99a45a4fd8d3048cab28dbcb120cd0e29",
+    "script": "scripts/package_artifacts.py",
+    "sha256": "d29b8d056452d55a68afce2d841135b375a3e35bfa2e0b0349fb2a313d7a423c"
+  },
+  "source_generation": {
+    "original_validation_sha256": "227a3da5cdd9762dd5e8149904a5e68705216f85acbfdd0128dc29dacadf7aeb",
+    "repository": "https://github.com/ingitdb/ror-ingitdb",
+    "revision": "bbbec903248680caea04e68f94b9a957b6efc55b"
+  },
+  "sqlite": {
+    "bytes": 37904521,
+    "chunks": [
+      {
+        "bytes": 20971520,
+        "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001",
+        "sha256": "dcbe231796b5d51307adb81ad5623b509ac5f055cd7a773f1706fbe0af1aa2c0"
+      },
+      {
+        "bytes": 16933001,
+        "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002",
+        "sha256": "bdc133c44b8c27552c0089495cf2d8ad9bcda0722cc2c092fb3498acf078b572"
+      }
+    ],
+    "compression": "gzip",
+    "decodedBytes": 238563328,
+    "decodedSha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38",
+    "encodedPath": "ror.sqlite.gz",
+    "path": "ror.sqlite",
+    "sha256": "726f5c77eba612a718755cb0cca028d88858317ce57e663b4b248394ace3b8ea"
+  }
+}
