@@ -1,23 +1,36 @@
 ---
 ovdb: 1
-publish: []
+publish: [./ovdb.yaml, ./ovdb-database.json]
 ---
-# ROR provider publication prerequisites
+# Research Organization Registry candidate deployment metadata
 
-`templates/ovdb.yaml` prepares source/model/licence/publisher metadata. It lacks an
-approved canonical database URL, deployment URL and discovery endpoint and is
-therefore not a valid publishable Directory manifest yet. The empty publish
-list prevents accidental ingestion. The designated integration owner supplies
-verified immutable hosting/runtime/Directory receipts before opting it in.
+The explicit list opts both manifests into reviewed publisher ingestion. These
+wrappers allocate the existing Cloud identities; they do not prove live hosting,
+Directory admission or query availability. The candidate JSON declares query=false
+and manifest.json declares available/query/deploymentVerified=false. Future runtime
+handoff must explicitly use requirePublishedQuery:false for candidate smoke only.
+The runtime owner must supply released dependencies, route/homepage checks,
+native serving-key preservation, immutable pin guards, read-only/CORS and measured
+capacity proof before live publication. Final admission also requires independent
+carry-forward review and the released default OVDB publisher validator.
 
-The native `organizations.id` and `relationships.id` columns stay intact. The
-current runtime reserves `id`; its owner must land a faithful source-field
-adapter before mounting this provider. The generated SQLite is larger than
-the runtime's 25 MiB per-file guard. Publication must use its existing reviewed
-ordered chunk mechanism, with separate serving checksums; no guard increase
-or bulk Git/browser asset is implied.
+`metadata/artifact.json` lists actual immutable chunk URLs, hashes, reconstruction
+instructions and attribution downloads at accepted provider revision `24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7`.
+There is no physical download URL for `ror.sqlite`. Keep DATA-LICENSE.md
+with reconstructed/downloaded data. Data licence: `CC0-1.0 AND CC-BY-4.0`;
+code/model/meaning rights remain separate. The snapshot and model/meaning/representation
+bytes are unchanged; structural validation grants no new semantic acceptance.
 
-The three physical tables expose one logical ROR organizations recordset.
-No ROR user representation contract is published here: a fresh dedicated
-reconciler must accept the exact user source/schema/property/namespace first.
-Source identity and GeoNames reference bindings do not authorize user joins.
+The full native schema has 3 physical tables; 3 reviewed
+model-backed tables are listed in publisher/public descriptor metadata.
+The three physical ROR tables retain one logical organizations recordset, all statuses and original location/relationship ordinals.
+The accepted five-logical-recordset W1 scope is shared across the two providers.
+Native `id`/keys remain source fields; future generated serving keys are separate.
+`deployment.recordset_page` exists only in publisher YAML; JSON deployment stays
+closed to engine/url/discovery. No new provenance roles are assigned.
+
+Reproduce offline with `python3 scripts/generate_deployment.py`; verify without
+writing with `python3 scripts/generate_deployment.py --check`. This streams local
+accepted chunks into a temporary SQLite, reads its native schema/counts in read-only
+mode, explicitly rehashes unchanged inputs and deletes temporary reconstruction.
+No upstream download, source rebuild or runtime deployment occurs.

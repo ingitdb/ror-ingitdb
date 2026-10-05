@@ -1,0 +1,215 @@
+{
+  "apiUrl": "https://cloud.openvaultdb.com/v1/databases/ror",
+  "capabilities": {
+    "query": false,
+    "read": true,
+    "write": false
+  },
+  "deployment": {
+    "discovery": "https://cloud.openvaultdb.com/.well-known/openvaultdb",
+    "engine": "sqlite",
+    "url": "https://cloud.openvaultdb.com/ovdb/dbs/ror"
+  },
+  "description": "Accepted pinned native source projection. Query availability awaits reviewed live runtime proof; native identifiers, source values, exceptions and multiplicity are preserved.",
+  "format": "ovdb-database/draft-1",
+  "homepage": "https://github.com/ingitdb/ror-ingitdb",
+  "id": "https://cloud.openvaultdb.com/ovdb/dbs/ror",
+  "licences": {
+    "data": "CC0-1.0 AND CC-BY-4.0",
+    "meaning": "CC0-1.0",
+    "model": "CC0-1.0"
+  },
+  "localId": "ror",
+  "meaning": {
+    "id": "meaning://github.com/ingitdb/ror-ingitdb",
+    "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/model/ror.meaning.yaml"
+  },
+  "model": {
+    "hclUrl": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/model/ror.modelspec.hcl",
+    "id": "modelspec://github.com/ingitdb/ror-ingitdb/ror",
+    "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/model/ror.modelspec.json"
+  },
+  "provenance": {
+    "license": "CC0-1.0 AND CC-BY-4.0",
+    "notes": "Unchanged generated native SQLite, reconstructed only from the accepted ordered chunks. The logical SQLite path is not a hosted download file. Original upstream inputs, generator, hashes and coverage remain in source/artifact-snapshot.json and its referenced source receipts. Serving artifacts and public query proof have separate future receipts.",
+    "path": "ror.sqlite",
+    "repository": "https://github.com/ingitdb/ror-ingitdb",
+    "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+    "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
+  },
+  "publisher": {
+    "name": "inGitDB",
+    "repository": "https://github.com/ingitdb/ror-ingitdb",
+    "url": "https://github.com/ingitdb"
+  },
+  "recordsets": [
+    {
+      "columns": [
+        {
+          "defaultValue": null,
+          "name": "organization_id",
+          "nullable": false,
+          "primaryKey": true,
+          "primaryKeyPosition": 1,
+          "type": "TEXT"
+        },
+        {
+          "defaultValue": null,
+          "name": "ordinal",
+          "nullable": false,
+          "primaryKey": true,
+          "primaryKeyPosition": 2,
+          "type": "INTEGER"
+        },
+        {
+          "defaultValue": null,
+          "name": "geonames_id",
+          "nullable": true,
+          "primaryKey": false,
+          "primaryKeyPosition": null,
+          "type": "INTEGER"
+        },
+        {
+          "defaultValue": null,
+          "name": "geonames_details_json",
+          "nullable": false,
+          "primaryKey": false,
+          "primaryKeyPosition": null,
+          "type": "TEXT"
+        }
+      ],
+      "description": "",
+      "foreignKeys": [
+        {
+          "column": "organization_id",
+          "constraint": 0,
+          "position": 0,
+          "referencedColumn": "id",
+          "table": "organizations"
+        }
+      ],
+      "kind": "table",
+      "name": "locations",
+      "primaryKey": [
+        {
+          "column": "organization_id",
+          "position": 1
+        },
+        {
+          "column": "ordinal",
+          "position": 2
+        }
+      ],
+      "rowCount": 141722
+    },
+    {
+      "columns": [
+        {
+          "defaultValue": null,
+          "name": "id",
+          "nullable": false,
+          "primaryKey": true,
+          "primaryKeyPosition": 1,
+          "type": "TEXT"
+        },
+        {
+          "defaultValue": null,
+          "name": "status",
+          "nullable": false,
+          "primaryKey": false,
+          "primaryKeyPosition": null,
+          "type": "TEXT"
+        },
+        {
+          "defaultValue": null,
+          "name": "raw_json",
+          "nullable": false,
+          "primaryKey": false,
+          "primaryKeyPosition": null,
+          "type": "TEXT"
+        }
+      ],
+      "description": "",
+      "foreignKeys": [],
+      "kind": "table",
+      "name": "organizations",
+      "primaryKey": [
+        {
+          "column": "id",
+          "position": 1
+        }
+      ],
+      "rowCount": 141528
+    },
+    {
+      "columns": [
+        {
+          "defaultValue": null,
+          "name": "organization_id",
+          "nullable": false,
+          "primaryKey": true,
+          "primaryKeyPosition": 1,
+          "type": "TEXT"
+        },
+        {
+          "defaultValue": null,
+          "name": "ordinal",
+          "nullable": false,
+          "primaryKey": true,
+          "primaryKeyPosition": 2,
+          "type": "INTEGER"
+        },
+        {
+          "defaultValue": null,
+          "name": "type",
+          "nullable": false,
+          "primaryKey": false,
+          "primaryKeyPosition": null,
+          "type": "TEXT"
+        },
+        {
+          "defaultValue": null,
+          "name": "id",
+          "nullable": false,
+          "primaryKey": false,
+          "primaryKeyPosition": null,
+          "type": "TEXT"
+        },
+        {
+          "defaultValue": null,
+          "name": "label",
+          "nullable": false,
+          "primaryKey": false,
+          "primaryKeyPosition": null,
+          "type": "TEXT"
+        }
+      ],
+      "description": "",
+      "foreignKeys": [
+        {
+          "column": "organization_id",
+          "constraint": 0,
+          "position": 0,
+          "referencedColumn": "id",
+          "table": "organizations"
+        }
+      ],
+      "kind": "table",
+      "name": "relationships",
+      "primaryKey": [
+        {
+          "column": "organization_id",
+          "position": 1
+        },
+        {
+          "column": "ordinal",
+          "position": 2
+        }
+      ],
+      "rowCount": 72747
+    }
+  ],
+  "serverDbBaseUrl": "https://cloud.openvaultdb.com/ovdb/dbs/ror",
+  "serverId": "https://cloud.openvaultdb.com/ovdb/",
+  "title": "Research Organization Registry"
+}

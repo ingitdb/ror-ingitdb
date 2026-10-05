@@ -1,0 +1,36 @@
+# Reproducible candidate provider input; public query proof remains pending.
+format: ovdb-manifest/draft-1
+id: ror
+title: Research Organization Registry
+description: Accepted pinned native source projection. Query availability awaits reviewed live runtime proof; native identifiers, source values, exceptions and multiplicity are preserved.
+homepage: https://github.com/ingitdb/ror-ingitdb
+url: https://cloud.openvaultdb.com/ovdb/dbs/ror
+deployment:
+  url: https://cloud.openvaultdb.com/ovdb/dbs/ror
+  engine: sqlite
+  discovery: https://cloud.openvaultdb.com/.well-known/openvaultdb
+  recordset_page: https://cloud.openvaultdb.com/ovdb/dbs/ror/collections/{name}
+model:
+  address: modelspec://github.com/ingitdb/ror-ingitdb/ror
+  modelspec: model/ror.modelspec.json
+  hcl: model/ror.modelspec.hcl
+meaning:
+  file: model/ror.meaning.yaml
+  graph:
+    id: ror
+    address: meaning://github.com/ingitdb/ror-ingitdb
+publisher:
+  name: inGitDB
+  url: https://github.com/ingitdb
+  repository: https://github.com/ingitdb/ror-ingitdb
+licences:
+  data: CC0-1.0 AND CC-BY-4.0
+  model: CC0-1.0
+  meaning: CC0-1.0
+representation_contract:
+  path: model/representations.json
+  sha256: 61c8c1f9297ac538e9cbd1b32806e4914799cf64bbeac89a71eb71b63c2559e6
+recordsets:
+  - locations
+  - organizations
+  - relationships
