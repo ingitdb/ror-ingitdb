@@ -1,0 +1,26 @@
+# Prepared provider input; deployment prerequisites remain OPEN.
+# OVDB.md intentionally opts no manifest into Directory ingestion yet.
+# Copy to root and complete truthful deployment fields only under integration review.
+format: ovdb-manifest/draft-1
+id: ror
+title: Research Organization Registry
+description: Full pinned ROR organizations, preserving native URL identifiers, statuses, locations and relationships.
+homepage: https://ror.org/
+model:
+  address: modelspec://github.com/ingitdb/ror-ingitdb/ror
+  modelspec: model/ror.modelspec.json
+  hcl: model/ror.modelspec.hcl
+meaning:
+  file: model/ror.meaning.yaml
+  graph:
+    id: ror
+    address: meaning://github.com/ingitdb/ror-ingitdb
+publisher:
+  name: inGitDB
+  url: https://github.com/ingitdb
+  repository: https://github.com/ingitdb/ror-ingitdb
+licences:
+  data: CC0-1.0 AND CC-BY-4.0
+  model: CC0-1.0
+  meaning: CC0-1.0
+recordsets: [organizations, locations, relationships]
