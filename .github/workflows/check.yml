@@ -11,3 +11,5 @@ jobs:
         with:
           python-version: '3.14'
       - run: python -m unittest discover -s tests -v
+      - if: hashFiles('source/artifact-snapshot.json') != ''
+        run: python scripts/package_artifacts.py check
