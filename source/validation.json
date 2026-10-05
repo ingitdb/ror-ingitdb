@@ -1,0 +1,129 @@
+{
+  "checks": {
+    "git_diff_check": "pass",
+    "meaninggraph": "2 concepts,0 errors,0 warnings",
+    "modelspec_json_twin": "equal",
+    "modelspec_publish_lint": "0 errors,0 warnings",
+    "unittest": 8
+  },
+  "determinism": {
+    "same_pinned_input_two_full_builds": {
+      "DATA-LICENSE.md": true,
+      "ror-geonames-ids.txt": true,
+      "ror.sqlite": true,
+      "snapshot.json": true
+    },
+    "scope": "same recorded SQLite/Python toolchain; measured timing excluded"
+  },
+  "failed_layout": {
+    "organizations_without_rowid": "SQLite exceeded256MiB guard; staged output removed",
+    "resolution": "ordinary rowid organizations with native UNIQUE NOT NULL primary key; no source scope reduction"
+  },
+  "full_rebuild_resources": [
+    {
+      "download_bytes": 37540961,
+      "elapsed_seconds": 5.177383041009307,
+      "peak_rss_bytes": 46743552,
+      "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+      "python": "3.14.7",
+      "sqlite": "3.53.4",
+      "temporary_bytes": 276264145
+    },
+    {
+      "download_bytes": 37540961,
+      "elapsed_seconds": 5.364988999906927,
+      "peak_rss_bytes": 46530560,
+      "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+      "python": "3.14.7",
+      "sqlite": "3.53.4",
+      "temporary_bytes": 276264145
+    }
+  ],
+  "independent_full_source_audit": {
+    "compared": "every full raw JSON shape/status; every location/reference/details/ordinal; every relationship/type/target/label/ordinal; no extra rows",
+    "locations": 141722,
+    "organizations": 141528,
+    "parser": "scripts/verify_source.py character-depth framing, separate from importer raw_decode",
+    "relationships": 72747
+  },
+  "open_dependencies": [
+    "independent root review and WB landing",
+    "approved canonical identity/deployment/discovery manifest",
+    "native-id runtime adapter",
+    "immutable25MiB ordered-chunk publication and serving checksum",
+    "GeoNames full place-reference closure",
+    "dedicated user ROR contract acceptance",
+    "registry and Directory publication",
+    "bounded app/browser integration",
+    "combined W1 download/temp/RSS/elapsed budget receipt"
+  ],
+  "outcome": "source implemented; review and publication pending",
+  "snapshot": {
+    "counts": {
+      "locations": 141722,
+      "null_location_ids": 0,
+      "organizations": 141528,
+      "organizations_with_multiple_locations": 138,
+      "organizations_without_locations": 0,
+      "relationship_targets_absent": 0,
+      "relationships": 72747,
+      "unique_geonames_ids": 19729
+    },
+    "outputs": {
+      "DATA-LICENSE.md": {
+        "bytes": 1116,
+        "sha256": "39d8853e3c9f9a7a96ea77edd1afe52ad25902f34a30855ad53c2c1aed62443b"
+      },
+      "ror-geonames-ids.txt": {
+        "bytes": 156565,
+        "sha256": "04c27970c5e70c8d3bbd470e18d022d0477dbd63257da3e9c8427043f66081e9"
+      },
+      "ror.sqlite": {
+        "bytes": 238563328,
+        "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
+      }
+    },
+    "parser_sha256": "4c9b507975c0c8dd2f5f36ac2cf5009f819bd3b736ee83a8a87590b24c1c4903",
+    "projection": {
+      "array_ordinals": "zero-based original order",
+      "geonames_ids": "numeric sorted distinct positive native IDs, LF",
+      "logical_recordset": "ROR organizations",
+      "physical_tables": [
+        "organizations",
+        "locations",
+        "relationships"
+      ],
+      "raw_json": "complete source record, canonical JSON serialization; no field loss",
+      "status_policy": "all statuses",
+      "user_contract": "pending dedicated acceptance"
+    },
+    "source": {
+      "archive_bytes": 37540961,
+      "archive_md5": "a935217de21e7983b977f5419f1a6b20",
+      "archive_sha256": "476988542f1bdd185f779386f90149371f58cb4ebdba326db3b7b428a468d4a5",
+      "bootstrap_commit": "156fa46e53b04f4d0b8aa54e31cca2d86af63038",
+      "embedded_geonames_license": "CC-BY-4.0",
+      "fetch_time": "2026-10-05T01:04:26.439988+00:00",
+      "member": "v2.13-2026-09-22-ror-data.json",
+      "member_bytes": 317796669,
+      "member_sha256": "6d032ff473f771e015da0837fe28b881a8f85822ee7815effefe11dc49c4346c",
+      "metadata_license": "CC0-1.0",
+      "organizations": 141528,
+      "release": "v2.13",
+      "release_date": "2026-09-22",
+      "source_record_url": "https://zenodo.org/records/22902037",
+      "source_url": "https://zenodo.org/records/22902037/files/v2.13-2026-09-22-ror-data.zip"
+    },
+    "statuses": {
+      "active": 138289,
+      "inactive": 1809,
+      "withdrawn": 1430
+    }
+  },
+  "tool_pins": {
+    "binary_vcs_modified": false,
+    "meaninggraph_cli": "a58a506d9e6f76660cc8586478521787976111d0",
+    "meaninggraph_core": "982916d73f0a35ff2558b0062f58aa3ac4f24d97",
+    "modelspec_cli": "a8de98b4565ae669b6fba00c334b4649c9d40b11"
+  }
+}

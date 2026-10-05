@@ -1,0 +1,17 @@
+{
+  "archive_bytes": 37540961,
+  "archive_md5": "a935217de21e7983b977f5419f1a6b20",
+  "archive_sha256": "476988542f1bdd185f779386f90149371f58cb4ebdba326db3b7b428a468d4a5",
+  "bootstrap_commit": "156fa46e53b04f4d0b8aa54e31cca2d86af63038",
+  "embedded_geonames_license": "CC-BY-4.0",
+  "fetch_time": "2026-10-05T01:04:26.439988+00:00",
+  "member": "v2.13-2026-09-22-ror-data.json",
+  "member_bytes": 317796669,
+  "member_sha256": "6d032ff473f771e015da0837fe28b881a8f85822ee7815effefe11dc49c4346c",
+  "metadata_license": "CC0-1.0",
+  "organizations": 141528,
+  "release": "v2.13",
+  "release_date": "2026-09-22",
+  "source_record_url": "https://zenodo.org/records/22902037",
+  "source_url": "https://zenodo.org/records/22902037/files/v2.13-2026-09-22-ror-data.zip"
+}
