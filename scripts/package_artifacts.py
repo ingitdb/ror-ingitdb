@@ -175,11 +175,16 @@ def verify_bundle(root):
         if path in pins or not re.fullmatch(r"[0-9a-f]{64}", artifact.get("sha256", "")):
             raise ValueError("duplicate artifact path or malformed hash")
         pins[path] = artifact
-        if path != "ror.sqlite":
+        if path == "ror.sqlite":
+            if artifact.get("kind") != "reconstructed":
+                raise ValueError("native dataset must identify a reconstructed decoded artifact")
+        else:
             file = safe_path(root, path)
             if file.stat().st_size != artifact["bytes"] or digest(file) != artifact["sha256"]:
                 raise ValueError("artifact bytes/hash mismatch")
     original = read_json(safe_path(root, "source/validation.json"))
+    if original["native_key_checks"].get("dataset_storage") != {"kind": "reconstructed", "encoding": "gzip", "decoded_path": "ror.sqlite"}:
+        raise ValueError("native provenance must identify decoded dataset storage")
     native = original["native_key"]
     expected = original["snapshot"]["outputs"]["ror.sqlite"]
     if (native["module"], native["entity"], native["property"], native["namespace"]) != ("ror", "organizations", "id", "ROR:URL") or type(native["duplicates"]) is not int or native["duplicates"] != 0:
@@ -256,6 +261,7 @@ def package(root, database, output, revision, source_revision, chunk_bytes=CHUNK
         receipt = dict(original)
         receipt["native_key"] = proof
         receipt["native_key_checks"] = {"sqlite_integrity": "ok", "constraint": "TEXT NOT NULL PRIMARY KEY", "source_association": "every native id/status equals full raw source JSON", "generation_provider": {"repository": REPOSITORY, "revision": source_revision}}
+        receipt["native_key_checks"]["dataset_storage"] = {"kind": "reconstructed", "encoding": "gzip", "decoded_path": "ror.sqlite"}
         write_json(stage / "source/validation.json", receipt)
         writer = ChunkWriter(stage, chunk_bytes)
         with database.open("rb") as source, gzip.GzipFile(filename="", mode="wb", fileobj=writer, mtime=0, compresslevel=9) as compressed:
@@ -264,7 +270,7 @@ def package(root, database, output, revision, source_revision, chunk_bytes=CHUNK
         sqlite = {"path": "ror.sqlite", "compression": "gzip", "encodedPath": "ror.sqlite.gz", "sha256": writer.aggregate.hexdigest(), "bytes": writer.total,
                   "decodedBytes": database.stat().st_size, "decodedSha256": proof["dataset"]["sha256"], "chunks": writer.chunks}
         metadata = [*FILES, "source/validation.json"]
-        artifacts = [{"path": "ror.sqlite", "sha256": proof["dataset"]["sha256"], "bytes": database.stat().st_size}]
+        artifacts = [{"path": "ror.sqlite", "kind": "reconstructed", "sha256": proof["dataset"]["sha256"], "bytes": database.stat().st_size}]
         artifacts += [{"path": name, "sha256": digest(stage / name), "bytes": (stage / name).stat().st_size} for name in metadata]
         artifacts += writer.chunks
         snapshot = {"generator": generator, "source_generation": {"repository": REPOSITORY, "revision": source_revision, "original_validation_sha256": hashlib.sha256(original_bytes).hexdigest()},

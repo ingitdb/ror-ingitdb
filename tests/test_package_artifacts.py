@@ -70,13 +70,15 @@ class PackagingTests(unittest.TestCase):
         self.assertEqual(proof["native_key"]["records"], 1)
         self.assertEqual(proof["native_key"]["duplicates"], 0)
         self.assertEqual(packager.verify_bundle(a), first)
+        self.assertEqual(first["artifacts"][0]["kind"], "reconstructed")
+        self.assertFalse((a / "ror.sqlite").exists())
         self.assertNotIn("artifact-snapshot", json.dumps(proof))
 
     def test_chunk_hash_order_missing_and_path_controls(self):
         snapshot, _ = self.package()
         output = Path(self.temp.name) / "out"
         snapshot_path = output / "source/artifact-snapshot.json"
-        for case in ["order", "duplicate", "missing", "escape", "encoded", "decoded", "generator"]:
+        for case in ["order", "duplicate", "missing", "escape", "encoded", "decoded", "generator", "physical-dataset"]:
             altered = copy.deepcopy(snapshot)
             if case == "order":
                 altered["sqlite"]["chunks"].reverse()
@@ -88,6 +90,8 @@ class PackagingTests(unittest.TestCase):
                 altered["artifacts"][1]["path"] = "../model"
             elif case in ["encoded", "decoded"]:
                 altered["sqlite"]["sha256" if case == "encoded" else "decodedSha256"] = "0" * 64
+            elif case == "physical-dataset":
+                altered["artifacts"][0]["kind"] = "file"
             else:
                 altered["generator"]["revision"] = "main"
             packager.write_json(snapshot_path, altered)
