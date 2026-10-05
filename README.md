@@ -56,3 +56,55 @@ their checksums are retained as compact metadata, not raw source assets.
 
 Original code/model/meaning metadata: CC0-1.0. ROR metadata: CC0-1.0. Embedded
 GeoNames data: CC-BY-4.0, with [source attribution and transformation details](DATA-LICENSE.md).
+
+## Native artifact companion
+
+`scripts/package_artifacts.py` packages the reviewed source SQLite without
+regenerating data or changing its schema. It checks the native
+`organizations.id` constraint, every canonical URL/checksum, unique/count
+closure and each native key/status against the full raw source record.
+The bounded `native_key` extension in `source/validation.json` records those
+checks and model/binding/data hashes. Its original embedded generation
+snapshot stays unchanged, including historical measurements and gate state.
+
+`source/artifact-snapshot.json` is separate packaging metadata. It pins an
+exact committed packaging tool revision and binds the unchanged logical
+`ror.sqlite` decoded artifact descriptor (`kind: reconstructed`), source models/binding, extended provenance, attribution
+and ordered compressed chunks. Concatenating those chunks reconstructs one
+gzip stream; decoding it yields the exact reviewed native SQLite. Chunks are
+compressed stream segments, not individually decodable gzip files. Every
+physical file remains within the existing 25 MiB guard. Encoded aggregate,
+decoded SQLite and individual chunk sizes/checksums are all checked.
+
+The checker requires an explicit original source commit and an authority
+resolver backed by a local provider Git repository. It verifies regular bounded
+Git blobs for the original receipt, model/binding/source/attribution metadata
+and exact generator script, cross-links the preserved generation/proof, and
+requires the complete distributable artifact set. CI supplies the original
+source revision and fetches its immutable history. A copied bundle alone cannot
+prove code/source authority; missing authority fails closed. These checks verify
+provenance associations and do not issue semantic acceptance.
+
+```sh
+python3 scripts/package_artifacts.py build --database /private/path/ror.sqlite \
+  --source-revision bbbec903248680caea04e68f94b9a957b6efc55b \
+  --generator-revision 76e423f6b83d6cb8a11aed4fd982aed26be3f4ec \
+  --out /private/path/new-artifact-bundle
+python3 scripts/package_artifacts.py check \
+  --source-revision bbbec903248680caea04e68f94b9a957b6efc55b \
+  --authority-repository /path/to/provider-git-repository
+```
+
+`source/artifact-packaging-resources.json` measures only this new packaging
+operation, with zero new source downloads. Timing is separate from deterministic
+metadata; it does not retroactively measure initial capture or generation.
+For immutable source fetches, use the landed provider commit with
+`https://raw.githubusercontent.com/ingitdb/ror-ingitdb/<commit>/<chunk path>`.
+No release tag or unpinned main URL is an artifact authority.
+
+Discovery consumers read only bounded snapshot/provenance/model metadata.
+They do not download the SQLite, chunks or a global native key set to decide
+eligibility; issued membership requires an explicit bounded live lookup.
+Source native data and any future serving adapter output have distinct
+descriptors and checksums. This artifact publication does not supply a deployed
+API, Directory entry, production eligibility or a successful live query.

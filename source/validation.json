@@ -46,6 +46,40 @@
     "parser": "scripts/verify_source.py character-depth framing, separate from importer raw_decode",
     "relationships": 72747
   },
+  "native_key": {
+    "binding": {
+      "path": "model/ror.meaning.yaml",
+      "sha256": "70e54d63b0d564edc73149154f84374cdff30a17b8631c56ecab06dd93d452e9"
+    },
+    "dataset": {
+      "path": "ror.sqlite",
+      "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
+    },
+    "duplicates": 0,
+    "entity": "organizations",
+    "model": {
+      "path": "model/ror.modelspec.json",
+      "sha256": "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"
+    },
+    "module": "ror",
+    "namespace": "ROR:URL",
+    "property": "id",
+    "records": 141528
+  },
+  "native_key_checks": {
+    "constraint": "TEXT NOT NULL PRIMARY KEY",
+    "dataset_storage": {
+      "decoded_path": "ror.sqlite",
+      "encoding": "gzip",
+      "kind": "reconstructed"
+    },
+    "generation_provider": {
+      "repository": "https://github.com/ingitdb/ror-ingitdb",
+      "revision": "bbbec903248680caea04e68f94b9a957b6efc55b"
+    },
+    "source_association": "every native id/status equals full raw source JSON",
+    "sqlite_integrity": "ok"
+  },
   "open_dependencies": [
     "independent root review and WB landing",
     "approved canonical identity/deployment/discovery manifest",
