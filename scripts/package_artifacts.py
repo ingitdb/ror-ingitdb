@@ -225,6 +225,19 @@ def verify_bundle(root, *, source_revision=None, resolve=None):
     if resource.exists():
         read_json(resource)
         metadata.add("source/artifact-packaging-resources.json")
+    # Later representation metadata is a separate exact pair, never inserted
+    # into or admitted by the original native artifact snapshot.
+    attachment_files = {"model/representations.json", "source/representation-attachment.json"}
+    if any(safe_path(root, path).exists() for path in attachment_files):
+        for path in attachment_files:
+            file = safe_path(root, path)
+            if not file.is_file() or file.stat().st_size > METADATA_LIMIT:
+                raise ValueError("representation metadata requires its exact bounded regular pair")
+        spec = importlib.util.spec_from_file_location("representation_generator", Path(__file__).with_name("generate_representations.py"))
+        generator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(generator)
+        generator.generate(check=True, root=root)
+        metadata.update(attachment_files)
     if sum(safe_path(root, path).stat().st_size for path in metadata) > METADATA_LIMIT:
         raise ValueError("aggregate metadata exceeds 2 MiB")
     for folder in ("model", "source", "artifacts"):

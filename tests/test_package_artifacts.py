@@ -73,6 +73,39 @@ class PackagingTests(unittest.TestCase):
         with patch.object(packager, "committed_generator", return_value=self.generator), patch.object(packager, "git_blob", side_effect=self.blob):
             return packager.package(self.root, self.database, Path(self.temp.name) / name, "a" * 40, "c" * 40, chunk_bytes=100)
 
+    def test_real_later_representation_pair_is_exact_bounded_and_separate(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            copy = Path(temporary)
+            for folder in ("model", "source", "artifacts"):
+                shutil.copytree(ROOT / folder, copy / folder)
+            for name in ("DATA-LICENSE.md",):
+                shutil.copyfile(ROOT / name, copy / name)
+            def check():
+                return packager.verify_bundle(copy, source_revision="bbbec903248680caea04e68f94b9a957b6efc55b",
+                    resolve=lambda repository, ref, path: packager.git_blob(ROOT, ref, path))
+            snapshot = check()
+            pair = ("model/representations.json", "source/representation-attachment.json")
+            self.assertFalse(any(pin["path"] in pair for pin in snapshot["artifacts"]))
+            for name in pair:
+                file = copy / name
+                original = file.read_bytes()
+                for value in (original + b" ", b" " * (packager.METADATA_LIMIT + 1)):
+                    file.write_bytes(value)
+                    with self.assertRaises(ValueError):
+                        check()
+                file.unlink()
+                with self.assertRaises((ValueError, OSError)):
+                    check()
+                file.symlink_to(ROOT / name)
+                with self.assertRaises((ValueError, OSError)):
+                    check()
+                file.unlink()
+                file.write_bytes(original)
+            extra = copy / "source/untracked-representation.json"
+            extra.write_text("{}")
+            with self.assertRaises(ValueError):
+                check()
+
     def test_actual_native_key_source_association_and_deterministic_reconstruction(self):
         first, _ = self.package("a")
         second, _ = self.package("b")

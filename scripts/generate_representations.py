@@ -15,8 +15,8 @@ def encoded(value):
     return (json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8")
 
 
-def pinned(path, expected):
-    file = ROOT / path
+def pinned(path, expected, root=ROOT):
+    file = root / path
     if file.is_symlink() or not file.is_file():
         raise ValueError(f"expected regular metadata file: {path}")
     data = file.read_bytes()
@@ -30,12 +30,12 @@ def external(repository, revision, path, sha256):
                 path=path, sha256=sha256)
 
 
-def generate(check=False):
-    document = build()
+def generate(check=False, root=ROOT):
+    document = build(root)
     data = encoded(document)
     envelope = encoded(dict(path="model/representations.json", sha256=hashlib.sha256(data).hexdigest()))
     for path, value in [("model/representations.json", data), ("source/representation-attachment.json", envelope)]:
-        target = ROOT / path
+        target = root / path
         if check:
             if target.is_symlink() or not target.is_file() or target.read_bytes() != value:
                 raise ValueError(f"generated metadata differs: {path}")
@@ -46,7 +46,11 @@ def generate(check=False):
     return document
 
 
-def build():
+def build(root=ROOT):
+    def local(path, expected):
+        return pinned(path, expected, root)
+
+
     schema_path = "libs/datatug/main/src/lib/queries/fixtures/public-data-fabric/affiliations.modelspec.json"
     source_revision = "e7362033ec79c6663d7dbe0483b62fab01f7b9cd"
     source = dict(schema=external("datatug/datatug-apps", source_revision, schema_path,
@@ -54,14 +58,14 @@ def build():
                   data=external("datatug/datatug-apps", source_revision, schema_path.replace(".modelspec", ""),
                                 "44a30dd260c74f43b2138934cca0bccd493c7b804e124c5ecbded3c41226e543"),
                   module="affiliations", entity="Affiliation", property="ror_id", datatype="string", namespace="ROR:URL")
-    target = dict(snapshot=pinned("source/artifact-snapshot.json", "5520cfab8294336fbd98e8c1b4d3f732dffa88249ad58a15743f225cbaf15279"),
-                  model=pinned("model/ror.modelspec.json", "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"),
+    target = dict(snapshot=local("source/artifact-snapshot.json", "5520cfab8294336fbd98e8c1b4d3f732dffa88249ad58a15743f225cbaf15279"),
+                  model=local("model/ror.modelspec.json", "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"),
                   module="ror", entity="organizations", property="id", datatype="string", namespace="ROR:URL",
-                  binding=dict(document=pinned("model/ror.meaning.yaml", "70e54d63b0d564edc73149154f84374cdff30a17b8631c56ecab06dd93d452e9"),
+                  binding=dict(document=local("model/ror.meaning.yaml", "70e54d63b0d564edc73149154f84374cdff30a17b8631c56ecab06dd93d452e9"),
                                concept="research-organization", role="identifier",
                                meaning=dict(document=external("meaninggraph/core", CORE, "identity.meaning.yaml", "b0eb207d1e2e68572a47b4a08d02aa10389e2788c20a9796c812a4fcda894c33"), concept="organization")))
     native = dict(dataset=dict(path="ror.sqlite", sha256="afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"),
-                  provenance=pinned("source/validation.json", "06aa20ec30551b5eeeca02acdec95da3ebcfdd92524e3048e9d9f6a47d00c6fe"))
+                  provenance=local("source/validation.json", "06aa20ec30551b5eeeca02acdec95da3ebcfdd92524e3048e9d9f6a47d00c6fe"))
     decision = dict(document=external("datatug/datatug", "17263dbacabdfe95e53fc3c6980177416bdab941",
                                     "spec/research/public-data-fabric/evidence/w1-ror-user-decision.json",
                                     "a4caa4b6461230a3fa2ae8548121344cb286cfb98a9e19761a207c9f74479595"),
