@@ -1,7 +1,9 @@
 import copy
 from contextlib import closing
+import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import shutil
 import sqlite3
@@ -33,7 +35,9 @@ class PackagingTests(unittest.TestCase):
         self.original = {"snapshot": {"outputs": {"ror.sqlite": {"bytes": database.stat().st_size, "sha256": packager.digest(database)}},
                                       "counts": {"organizations": 1}, "source": {"organizations": 1}}, "historical": "unchanged"}
         self.pin_receipt()
-        self.generator = {"repository": packager.REPOSITORY, "revision": "a" * 40, "script": "scripts/package_artifacts.py", "sha256": "b" * 64}
+        self.code = (ROOT / "scripts/package_artifacts.py").read_bytes()
+        self.generator = {"repository": packager.REPOSITORY, "revision": "a" * 40, "script": "scripts/package_artifacts.py", "sha256": hashlib.sha256(self.code).hexdigest()}
+        self.authority = {name: (self.root / name).read_bytes() for name in [*packager.FILES, "source/validation.json"]}
 
     def tearDown(self):
         self.temp.cleanup()
@@ -43,12 +47,25 @@ class PackagingTests(unittest.TestCase):
         packager.write_json(self.root / "source/validation.json", self.original)
         packager.write_json(self.root / "source/ror-v2.13.json", self.original["snapshot"]["source"])
 
+    def check(self, root):
+        return packager.verify_bundle(root, source_revision="c" * 40, resolve=self.resolve)
+
+    def resolve(self, repository, revision, relative):
+        self.assertEqual(repository, packager.REPOSITORY)
+        if revision == "a" * 40 and relative == "scripts/package_artifacts.py":
+            return self.code
+        if revision == "c" * 40 and relative in self.authority:
+            return self.authority[relative]
+        raise ValueError("unresolved immutable authority")
+
     def blob(self, root, revision, relative):
+        if relative == "scripts/package_artifacts.py":
+            return self.resolve(packager.REPOSITORY, revision, relative)
         if relative == "source/validation.json":
             return (json.dumps(self.original, indent=2, sort_keys=True) + "\n").encode()
         if relative == "scripts/import_ror.py":
             return (self.root / relative).read_bytes()
-        return (self.root / relative).read_bytes()
+        return self.authority[relative]
 
     def package(self, name="out"):
         (self.root / "scripts").mkdir(exist_ok=True)
@@ -69,7 +86,7 @@ class PackagingTests(unittest.TestCase):
         self.assertEqual(proof["snapshot"], self.original["snapshot"])
         self.assertEqual(proof["native_key"]["records"], 1)
         self.assertEqual(proof["native_key"]["duplicates"], 0)
-        self.assertEqual(packager.verify_bundle(a), first)
+        self.assertEqual(self.check(a), first)
         self.assertEqual(first["artifacts"][0]["kind"], "reconstructed")
         self.assertFalse((a / "ror.sqlite").exists())
         self.assertNotIn("artifact-snapshot", json.dumps(proof))
@@ -96,12 +113,12 @@ class PackagingTests(unittest.TestCase):
                 altered["generator"]["revision"] = "main"
             packager.write_json(snapshot_path, altered)
             with self.subTest(case=case), self.assertRaises(ValueError):
-                packager.verify_bundle(output)
+                self.check(output)
         packager.write_json(snapshot_path, snapshot)
         chunk = output / snapshot["sqlite"]["chunks"][0]["path"]
         chunk.write_bytes(b"corrupt")
         with self.assertRaisesRegex(ValueError, "bytes/hash"):
-            packager.verify_bundle(output)
+            self.check(output)
 
     def test_native_duplicate_constraint_format_count_and_source_controls(self):
         for case in ["duplicate", "format", "association", "count", "hash", "model"]:
@@ -163,13 +180,81 @@ class PackagingTests(unittest.TestCase):
                     artifact.update(bytes=receipt_path.stat().st_size, sha256=packager.digest(receipt_path))
             packager.write_json(output / "source/artifact-snapshot.json", updated)
             with self.subTest(key=key, bad=bad), self.assertRaises(ValueError):
-                packager.verify_bundle(output)
+                self.check(output)
         packager.write_json(receipt_path, original)
         duplicate = copy.deepcopy(snapshot)
         duplicate["artifacts"].append(duplicate["artifacts"][0])
         packager.write_json(output / "source/artifact-snapshot.json", duplicate)
         with self.assertRaisesRegex(ValueError, "duplicate artifact"):
+            self.check(output)
+
+    def test_authoritative_source_proof_and_generator_associations(self):
+        snapshot, _ = self.package()
+        output = Path(self.temp.name) / "out"
+        receipt_path = output / "source/validation.json"
+        receipt = packager.read_json(receipt_path)
+        for case in ["source-revision", "source-repository", "original-hash", "generator-hash", "generator-revision", "generator-script",
+                     "proof-revision", "proof-repository", "preserved-receipt", "counts"]:
+            changed, proof = copy.deepcopy(snapshot), copy.deepcopy(receipt)
+            if case.startswith("source-"):
+                changed["source_generation"][case.split("-")[1]] = "0" * 40 if case.endswith("revision") else "https://github.com/other/source"
+            elif case == "original-hash":
+                changed["source_generation"]["original_validation_sha256"] = "0" * 64
+            elif case.startswith("generator-"):
+                key = {"hash": "sha256", "revision": "revision", "script": "script"}[case.split("-")[1]]
+                changed["generator"][key] = "0" * (64 if key == "sha256" else 40) if key != "script" else "scripts/import_ror.py"
+            elif case.startswith("proof-"):
+                proof["native_key_checks"]["generation_provider"][case.split("-")[1]] = "0" * 40 if case.endswith("revision") else "https://github.com/other/source"
+            elif case == "preserved-receipt":
+                proof["historical"] = "rewritten"
+            else:
+                changed["counts"]["organizations"] = 9
+            packager.write_json(receipt_path, proof)
+            for artifact in changed["artifacts"]:
+                if artifact["path"] == "source/validation.json":
+                    artifact.update(bytes=receipt_path.stat().st_size, sha256=packager.digest(receipt_path))
+            packager.write_json(output / "source/artifact-snapshot.json", changed)
+            with self.subTest(case=case), self.assertRaises(ValueError):
+                self.check(output)
+        with self.assertRaisesRegex(ValueError, "explicit immutable"):
             packager.verify_bundle(output)
+        packager.write_json(receipt_path, receipt)
+        packager.write_json(output / "source/artifact-snapshot.json", snapshot)
+        with self.assertRaisesRegex(ValueError, "immutable code authority"):
+            packager.verify_bundle(output, source_revision="c" * 40, resolve=lambda *args: b"x" * (packager.METADATA_LIMIT + 1))
+        self.assertEqual(self.check(output), snapshot)
+
+    def test_mandatory_metadata_regular_bounds_and_unbound_controls(self):
+        for case in ["pin", "file-and-pin", "source-pin", "hcl", "unbound-file", "unbound-pin", "rehashed-attribution", "directory", "fifo", "symlink", "bounds"]:
+            snapshot, _ = self.package(case)
+            output = Path(self.temp.name) / case
+            license = output / "DATA-LICENSE.md"
+            if case in ["pin", "file-and-pin", "source-pin", "hcl"]:
+                missing = {"source-pin": "source/ror-v2.13.json", "hcl": "model/ror.modelspec.hcl"}.get(case, "DATA-LICENSE.md")
+                snapshot["artifacts"] = [a for a in snapshot["artifacts"] if a["path"] != missing]
+                if case != "pin":
+                    (output / missing).unlink()
+            elif case in ["unbound-file", "unbound-pin"]:
+                path = output / "source/unbound.json"
+                path.write_text("{}")
+                if case == "unbound-pin":
+                    snapshot["artifacts"].append({"path": "source/unbound.json", "bytes": 2, "sha256": packager.digest(path)})
+            else:
+                license.unlink()
+                if case == "directory":
+                    license.mkdir()
+                elif case == "fifo":
+                    os.mkfifo(license)
+                elif case == "symlink":
+                    license.symlink_to(ROOT / "DATA-LICENSE.md")
+                else:
+                    license.write_bytes(b"altered attribution" if case == "rehashed-attribution" else b"x" * (packager.METADATA_LIMIT + 1))
+                    for a in snapshot["artifacts"]:
+                        if a["path"] == "DATA-LICENSE.md":
+                            a.update(bytes=license.stat().st_size, sha256=packager.digest(license))
+            packager.write_json(output / "source/artifact-snapshot.json", snapshot)
+            with self.subTest(case=case), self.assertRaises((ValueError, FileNotFoundError)):
+                self.check(output)
 
 
 if __name__ == "__main__":

@@ -7,9 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.14'
       - run: python -m unittest discover -s tests -v
       - if: hashFiles('source/artifact-snapshot.json') != ''
-        run: python scripts/package_artifacts.py check
+        run: python scripts/package_artifacts.py check --source-revision bbbec903248680caea04e68f94b9a957b6efc55b

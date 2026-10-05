@@ -51,9 +51,15 @@ def safe_path(root, relative):
 
 
 def read_json(path):
-    if Path(path).stat().st_size > METADATA_LIMIT:
+    if not Path(path).is_file() or Path(path).stat().st_size > METADATA_LIMIT:
         raise ValueError("metadata exceeds 2 MiB")
-    return json.loads(Path(path).read_text(), object_pairs_hook=source_importer.unique_object,
+    return decode_metadata(Path(path).read_bytes())
+
+
+def decode_metadata(data):
+    if not isinstance(data, bytes) or len(data) > METADATA_LIMIT:
+        raise ValueError("authority metadata exceeds 2 MiB or is not bytes")
+    return json.loads(data.decode("utf-8"), object_pairs_hook=source_importer.unique_object,
                       parse_float=source_importer.finite_float, parse_constant=source_importer.reject_constant)
 
 
@@ -71,6 +77,13 @@ def git_blob(root, revision, path):
     kind = subprocess.run(["git", "-C", str(root), "cat-file", "-t", revision], check=True, capture_output=True).stdout.strip()
     if kind != b"commit":
         raise ValueError("revision does not identify a Git commit")
+    tree = subprocess.run(["git", "-C", str(root), "ls-tree", revision, "--", path], check=True, capture_output=True).stdout
+    fields = tree.rstrip(b"\n").split(b"\t")
+    if len(fields) != 2 or fields[1] != path.encode() or fields[0].split()[:2] not in ([b"100644", b"blob"], [b"100755", b"blob"]):
+        raise ValueError("authority path must be a regular committed file")
+    size = int(subprocess.run(["git", "-C", str(root), "cat-file", "-s", f"{revision}:{path}"], check=True, capture_output=True).stdout)
+    if size > METADATA_LIMIT:
+        raise ValueError("authority metadata exceeds 2 MiB")
     return subprocess.run(["git", "-C", str(root), "show", f"{revision}:{path}"], check=True, capture_output=True).stdout
 
 
@@ -159,13 +172,30 @@ class ChunkWriter:
         return size
 
 
-def verify_bundle(root):
+def verify_bundle(root, *, source_revision=None, resolve=None):
+    """Check reconstruction and immutable provenance; caller supplies source authority.
+
+    resolve(repository, revision, path) returns bounded bytes from that immutable
+    authority. This verifies associations, not semantic acceptance of a source.
+    """
+    if not isinstance(source_revision, str) or not re.fullmatch(r"[0-9a-f]{40}", source_revision) or not callable(resolve):
+        raise ValueError("explicit immutable source revision and authority resolver required")
     snapshot = read_json(safe_path(root, "source/artifact-snapshot.json"))
     sqlite = snapshot["sqlite"]
     artifacts = snapshot["artifacts"]
     generator = snapshot["generator"]
     if generator.get("repository") != REPOSITORY or not re.fullmatch(r"[0-9a-f]{40}", generator.get("revision", "")):
         raise ValueError("generator must name immutable provider code revision")
+    if generator.get("script") != "scripts/package_artifacts.py" or not re.fullmatch(r"[0-9a-f]{64}", generator.get("sha256", "")):
+        raise ValueError("invalid immutable generator script/hash")
+    code = resolve(REPOSITORY, generator["revision"], generator["script"])
+    if not isinstance(code, bytes) or len(code) > METADATA_LIMIT or hashlib.sha256(code).hexdigest() != generator["sha256"]:
+        raise ValueError("generator hash disagrees with immutable code authority")
+    generation = snapshot["source_generation"]
+    authority_bytes = resolve(REPOSITORY, source_revision, "source/validation.json")
+    authority = decode_metadata(authority_bytes)
+    if generation != {"repository": REPOSITORY, "revision": source_revision, "original_validation_sha256": hashlib.sha256(authority_bytes).hexdigest()}:
+        raise ValueError("source generation disagrees with explicit immutable authority")
     if not isinstance(artifacts, list) or not 0 < len(artifacts) <= 10000:
         raise ValueError("invalid artifact list")
     pins = {}
@@ -180,9 +210,40 @@ def verify_bundle(root):
                 raise ValueError("native dataset must identify a reconstructed decoded artifact")
         else:
             file = safe_path(root, path)
+            if not file.is_file() or type(artifact.get("bytes")) is not int or not 0 <= artifact["bytes"] <= (FILE_LIMIT if path.startswith("artifacts/") else METADATA_LIMIT):
+                raise ValueError("artifact must be a bounded regular file")
             if file.stat().st_size != artifact["bytes"] or digest(file) != artifact["sha256"]:
                 raise ValueError("artifact bytes/hash mismatch")
+    chunks = sqlite["chunks"]
+    if not isinstance(chunks, list) or not chunks or len(chunks) > 10000:
+        raise ValueError("invalid chunk list")
+    required = {*FILES, "source/validation.json", "ror.sqlite", *(chunk["path"] for chunk in chunks)}
+    if set(pins) != required:
+        raise ValueError("mandatory metadata/chunk artifact closure mismatch")
+    metadata = {*FILES, "source/validation.json", "source/artifact-snapshot.json"}
+    resource = safe_path(root, "source/artifact-packaging-resources.json")
+    if resource.exists():
+        read_json(resource)
+        metadata.add("source/artifact-packaging-resources.json")
+    if sum(safe_path(root, path).stat().st_size for path in metadata) > METADATA_LIMIT:
+        raise ValueError("aggregate metadata exceeds 2 MiB")
+    for folder in ("model", "source", "artifacts"):
+        for file in safe_path(root, folder).rglob("*"):
+            relative = str(file.relative_to(root))
+            safe_path(root, relative)
+            if not file.is_dir() and (not file.is_file() or relative not in set(pins) | metadata):
+                raise ValueError("unbound or nonregular distributable file")
     original = read_json(safe_path(root, "source/validation.json"))
+    if {k: v for k, v in original.items() if k not in ("native_key", "native_key_checks")} != authority:
+        raise ValueError("preserved original receipt disagrees with source authority")
+    if original["native_key_checks"].get("generation_provider") != {"repository": REPOSITORY, "revision": source_revision}:
+        raise ValueError("native proof generation provider disagrees with source authority")
+    for path in FILES:
+        data = resolve(REPOSITORY, source_revision, path)
+        if not isinstance(data, bytes) or len(data) > METADATA_LIMIT or safe_path(root, path).read_bytes() != data:
+            raise ValueError("mandatory metadata differs from original source authority")
+    if snapshot["counts"] != authority["snapshot"]["counts"]:
+        raise ValueError("packaging counts disagree with original generation")
     if original["native_key_checks"].get("dataset_storage") != {"kind": "reconstructed", "encoding": "gzip", "decoded_path": "ror.sqlite"}:
         raise ValueError("native provenance must identify decoded dataset storage")
     native = original["native_key"]
@@ -201,9 +262,6 @@ def verify_bundle(root):
         raise ValueError("native receipt disagrees with original generation")
     if sqlite["path"] != "ror.sqlite" or sqlite["encodedPath"] != "ror.sqlite.gz" or sqlite["compression"] != "gzip" or sqlite["decodedSha256"] != expected["sha256"] or sqlite["decodedBytes"] != expected["bytes"] or not 0 < sqlite["decodedBytes"] <= DECODED_LIMIT:
         raise ValueError("invalid native reconstruction descriptor")
-    chunks = sqlite["chunks"]
-    if not isinstance(chunks, list) or not chunks or len(chunks) > 10000:
-        raise ValueError("invalid chunk list")
     seen, encoded_hash, total = set(), hashlib.sha256(), 0
     with tempfile.TemporaryFile() as encoded:
         for index, chunk in enumerate(chunks, 1):
@@ -276,7 +334,7 @@ def package(root, database, output, revision, source_revision, chunk_bytes=CHUNK
         snapshot = {"generator": generator, "source_generation": {"repository": REPOSITORY, "revision": source_revision, "original_validation_sha256": hashlib.sha256(original_bytes).hexdigest()},
                     "artifacts": artifacts, "sqlite": sqlite, "counts": original["snapshot"]["counts"], "dataset_role": "unchanged native source projection; serving adapter has separate future checksums"}
         write_json(stage / "source/artifact-snapshot.json", snapshot)
-        verify_bundle(stage)
+        verify_bundle(stage, source_revision=source_revision, resolve=lambda repository, ref, path: git_blob(root, ref, path))
         measurements = {"elapsed_seconds": time.monotonic() - start, "peak_rss_bytes": source_importer.rss_bytes(), "new_download_bytes": 0,
                         "generated_bytes": sum(p.stat().st_size for p in stage.rglob("*") if p.is_file()), "native_input_bytes": database.stat().st_size,
                         "python": platform.python_version(), "sqlite": sqlite3.sqlite_version, "platform": platform.platform(), "measurement_scope": "new metadata packaging only; original capture/build receipts remain historical"}
@@ -303,10 +361,13 @@ if __name__ == "__main__":
     build.add_argument("--source-revision", required=True)
     check = sub.add_parser("check")
     check.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
+    check.add_argument("--source-revision", required=True, help="explicit original source commit authority; not a semantic acceptance decision")
+    check.add_argument("--authority-repository", type=Path, default=Path(__file__).resolve().parents[1], help="local provider Git repository containing immutable source/generator objects")
     args = parser.parse_args()
     if args.command == "build":
         snapshot, resources = package(args.root, args.database, args.out, args.generator_revision, args.source_revision)
         print(json.dumps({"chunks": len(snapshot["sqlite"]["chunks"]), "resources": resources}, indent=2))
     else:
-        snapshot = verify_bundle(args.root)
+        snapshot = verify_bundle(args.root, source_revision=args.source_revision,
+                                 resolve=lambda repository, ref, path: git_blob(args.authority_repository, ref, path))
         print(json.dumps({"decoded_bytes": snapshot["sqlite"]["decodedBytes"], "chunks": len(snapshot["sqlite"]["chunks"])}, indent=2))
