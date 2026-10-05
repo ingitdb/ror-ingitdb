@@ -1,0 +1,53 @@
+{
+  "attribution": [
+    {
+      "bytes": 1116,
+      "path": "DATA-LICENSE.md",
+      "sha256": "39d8853e3c9f9a7a96ea77edd1afe52ad25902f34a30855ad53c2c1aed62443b",
+      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/DATA-LICENSE.md"
+    }
+  ],
+  "downloads": [
+    {
+      "bytes": 20971520,
+      "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001",
+      "sha256": "dcbe231796b5d51307adb81ad5623b509ac5f055cd7a773f1706fbe0af1aa2c0",
+      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001"
+    },
+    {
+      "bytes": 16933001,
+      "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002",
+      "sha256": "bdc133c44b8c27552c0089495cf2d8ad9bcda0722cc2c092fb3498acf078b572",
+      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002"
+    }
+  ],
+  "reconstruction": "Concatenate chunks in listed order, then decode the complete gzip stream; verify every chunk, encoded stream and decoded SQLite size and SHA256.",
+  "repository": "https://github.com/ingitdb/ror-ingitdb",
+  "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+  "snapshot": {
+    "bytes": 3186,
+    "path": "source/artifact-snapshot.json",
+    "sha256": "5520cfab8294336fbd98e8c1b4d3f732dffa88249ad58a15743f225cbaf15279"
+  },
+  "sqlite": {
+    "bytes": 37904521,
+    "chunks": [
+      {
+        "bytes": 20971520,
+        "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001",
+        "sha256": "dcbe231796b5d51307adb81ad5623b509ac5f055cd7a773f1706fbe0af1aa2c0"
+      },
+      {
+        "bytes": 16933001,
+        "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002",
+        "sha256": "bdc133c44b8c27552c0089495cf2d8ad9bcda0722cc2c092fb3498acf078b572"
+      }
+    ],
+    "compression": "gzip",
+    "decodedBytes": 238563328,
+    "decodedSha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38",
+    "encodedPath": "ror.sqlite.gz",
+    "path": "ror.sqlite",
+    "sha256": "726f5c77eba612a718755cb0cca028d88858317ce57e663b4b248394ace3b8ea"
+  }
+}

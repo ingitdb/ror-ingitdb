@@ -1,0 +1,240 @@
+{
+  "contractVersion": 1,
+  "exports": [
+    {
+      "bytes": 37904521,
+      "chunks": [
+        {
+          "bytes": 20971520,
+          "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001",
+          "sha256": "dcbe231796b5d51307adb81ad5623b509ac5f055cd7a773f1706fbe0af1aa2c0"
+        },
+        {
+          "bytes": 16933001,
+          "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002",
+          "sha256": "bdc133c44b8c27552c0089495cf2d8ad9bcda0722cc2c092fb3498acf078b572"
+        }
+      ],
+      "compression": "gzip",
+      "decodedBytes": 238563328,
+      "decodedSha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38",
+      "encodedPath": "ror.sqlite.gz",
+      "path": "ror.sqlite",
+      "sha256": "726f5c77eba612a718755cb0cca028d88858317ce57e663b4b248394ace3b8ea"
+    }
+  ],
+  "manifest": {
+    "capabilities": {
+      "exports": [
+        "sqlite"
+      ],
+      "ovdb": {
+        "available": false,
+        "canonicalUrl": "https://cloud.openvaultdb.com/ovdb/dbs/ror",
+        "connection": "https://cloud.openvaultdb.com/v1/databases/ror",
+        "deploymentVerified": false,
+        "query": false,
+        "readOnly": true,
+        "serverDbBaseUrl": "https://cloud.openvaultdb.com/ovdb/dbs/ror",
+        "serverId": "https://cloud.openvaultdb.com/ovdb/"
+      }
+    },
+    "contractVersion": 1,
+    "dataFile": "ror.sqlite",
+    "description": "Accepted pinned native source projection. Query availability awaits reviewed live runtime proof; native identifiers, source values, exceptions and multiplicity are preserved.",
+    "id": "ror",
+    "name": "Research Organization Registry",
+    "source": {
+      "license": "CC0-1.0 AND CC-BY-4.0",
+      "licenseFile": "DATA-LICENSE.md",
+      "notes": "Unchanged generated native SQLite, reconstructed only from the accepted ordered chunks. The logical SQLite path is not a hosted download file. Original upstream inputs, generator, hashes and coverage remain in source/artifact-snapshot.json and its referenced source receipts. Serving artifacts and public query proof have separate future receipts.",
+      "path": "ror.sqlite",
+      "repository": "https://github.com/ingitdb/ror-ingitdb",
+      "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+      "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
+    }
+  },
+  "schema": {
+    "contractVersion": 1,
+    "database": {
+      "id": "ror",
+      "name": "Research Organization Registry"
+    },
+    "source": {
+      "license": "CC0-1.0 AND CC-BY-4.0",
+      "licenseFile": "DATA-LICENSE.md",
+      "notes": "Unchanged generated native SQLite, reconstructed only from the accepted ordered chunks. The logical SQLite path is not a hosted download file. Original upstream inputs, generator, hashes and coverage remain in source/artifact-snapshot.json and its referenced source receipts. Serving artifacts and public query proof have separate future receipts.",
+      "path": "ror.sqlite",
+      "repository": "https://github.com/ingitdb/ror-ingitdb",
+      "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+      "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
+    },
+    "tables": [
+      {
+        "columns": [
+          {
+            "defaultValue": null,
+            "name": "organization_id",
+            "nullable": false,
+            "primaryKey": true,
+            "primaryKeyPosition": 1,
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": null,
+            "name": "ordinal",
+            "nullable": false,
+            "primaryKey": true,
+            "primaryKeyPosition": 2,
+            "type": "INTEGER"
+          },
+          {
+            "defaultValue": null,
+            "name": "geonames_id",
+            "nullable": true,
+            "primaryKey": false,
+            "primaryKeyPosition": null,
+            "type": "INTEGER"
+          },
+          {
+            "defaultValue": null,
+            "name": "geonames_details_json",
+            "nullable": false,
+            "primaryKey": false,
+            "primaryKeyPosition": null,
+            "type": "TEXT"
+          }
+        ],
+        "description": "",
+        "foreignKeys": [
+          {
+            "column": "organization_id",
+            "constraint": 0,
+            "position": 0,
+            "referencedColumn": "id",
+            "table": "organizations"
+          }
+        ],
+        "kind": "table",
+        "name": "locations",
+        "primaryKey": [
+          {
+            "column": "organization_id",
+            "position": 1
+          },
+          {
+            "column": "ordinal",
+            "position": 2
+          }
+        ],
+        "rowCount": 141722
+      },
+      {
+        "columns": [
+          {
+            "defaultValue": null,
+            "name": "id",
+            "nullable": false,
+            "primaryKey": true,
+            "primaryKeyPosition": 1,
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": null,
+            "name": "status",
+            "nullable": false,
+            "primaryKey": false,
+            "primaryKeyPosition": null,
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": null,
+            "name": "raw_json",
+            "nullable": false,
+            "primaryKey": false,
+            "primaryKeyPosition": null,
+            "type": "TEXT"
+          }
+        ],
+        "description": "",
+        "foreignKeys": [],
+        "kind": "table",
+        "name": "organizations",
+        "primaryKey": [
+          {
+            "column": "id",
+            "position": 1
+          }
+        ],
+        "rowCount": 141528
+      },
+      {
+        "columns": [
+          {
+            "defaultValue": null,
+            "name": "organization_id",
+            "nullable": false,
+            "primaryKey": true,
+            "primaryKeyPosition": 1,
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": null,
+            "name": "ordinal",
+            "nullable": false,
+            "primaryKey": true,
+            "primaryKeyPosition": 2,
+            "type": "INTEGER"
+          },
+          {
+            "defaultValue": null,
+            "name": "type",
+            "nullable": false,
+            "primaryKey": false,
+            "primaryKeyPosition": null,
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": null,
+            "name": "id",
+            "nullable": false,
+            "primaryKey": false,
+            "primaryKeyPosition": null,
+            "type": "TEXT"
+          },
+          {
+            "defaultValue": null,
+            "name": "label",
+            "nullable": false,
+            "primaryKey": false,
+            "primaryKeyPosition": null,
+            "type": "TEXT"
+          }
+        ],
+        "description": "",
+        "foreignKeys": [
+          {
+            "column": "organization_id",
+            "constraint": 0,
+            "position": 0,
+            "referencedColumn": "id",
+            "table": "organizations"
+          }
+        ],
+        "kind": "table",
+        "name": "relationships",
+        "primaryKey": [
+          {
+            "column": "organization_id",
+            "position": 1
+          },
+          {
+            "column": "ordinal",
+            "position": 2
+          }
+        ],
+        "rowCount": 72747
+      }
+    ]
+  }
+}

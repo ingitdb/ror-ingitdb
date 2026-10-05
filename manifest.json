@@ -1,0 +1,31 @@
+{
+  "capabilities": {
+    "exports": [
+      "sqlite"
+    ],
+    "ovdb": {
+      "available": false,
+      "canonicalUrl": "https://cloud.openvaultdb.com/ovdb/dbs/ror",
+      "connection": "https://cloud.openvaultdb.com/v1/databases/ror",
+      "deploymentVerified": false,
+      "query": false,
+      "readOnly": true,
+      "serverDbBaseUrl": "https://cloud.openvaultdb.com/ovdb/dbs/ror",
+      "serverId": "https://cloud.openvaultdb.com/ovdb/"
+    }
+  },
+  "contractVersion": 1,
+  "dataFile": "ror.sqlite",
+  "description": "Accepted pinned native source projection. Query availability awaits reviewed live runtime proof; native identifiers, source values, exceptions and multiplicity are preserved.",
+  "id": "ror",
+  "name": "Research Organization Registry",
+  "source": {
+    "license": "CC0-1.0 AND CC-BY-4.0",
+    "licenseFile": "DATA-LICENSE.md",
+    "notes": "Unchanged generated native SQLite, reconstructed only from the accepted ordered chunks. The logical SQLite path is not a hosted download file. Original upstream inputs, generator, hashes and coverage remain in source/artifact-snapshot.json and its referenced source receipts. Serving artifacts and public query proof have separate future receipts.",
+    "path": "ror.sqlite",
+    "repository": "https://github.com/ingitdb/ror-ingitdb",
+    "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+    "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
+  }
+}
