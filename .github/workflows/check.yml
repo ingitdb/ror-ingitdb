@@ -13,5 +13,6 @@ jobs:
         with:
           python-version: '3.14'
       - run: python -m unittest discover -s tests -v
+      - run: python scripts/generate_representations.py --check
       - if: hashFiles('source/artifact-snapshot.json') != ''
         run: python scripts/package_artifacts.py check --source-revision bbbec903248680caea04e68f94b9a957b6efc55b
