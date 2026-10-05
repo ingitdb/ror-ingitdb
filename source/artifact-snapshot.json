@@ -60,9 +60,9 @@
   "dataset_role": "unchanged native source projection; serving adapter has separate future checksums",
   "generator": {
     "repository": "https://github.com/ingitdb/ror-ingitdb",
-    "revision": "782df3e99a45a4fd8d3048cab28dbcb120cd0e29",
+    "revision": "76e423f6b83d6cb8a11aed4fd982aed26be3f4ec",
     "script": "scripts/package_artifacts.py",
-    "sha256": "d29b8d056452d55a68afce2d841135b375a3e35bfa2e0b0349fb2a313d7a423c"
+    "sha256": "001c65e7a69c5d413eab579d08fc2feccc23042404b1a04610d305a0f695b8ea"
   },
   "source_generation": {
     "original_validation_sha256": "227a3da5cdd9762dd5e8149904a5e68705216f85acbfdd0128dc29dacadf7aeb",

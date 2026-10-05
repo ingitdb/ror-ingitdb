@@ -1,26 +1,28 @@
 {
   "deterministic_comparison": "all non-resource files byte-identical",
   "deterministic_files": 9,
+  "deterministic_metadata_bytes": 17273,
   "measurement_scope": "new metadata packaging only; original capture/build receipts remain historical",
+  "metadata_definition": "all mandatory model/source/attribution metadata plus separate snapshot, excluding resource receipt and compressed chunks",
   "runs": [
     {
-      "elapsed_seconds": 5.000331291928887,
+      "elapsed_seconds": 5.338364792056382,
       "generated_bytes": 37921794,
       "measurement_scope": "new metadata packaging only; original capture/build receipts remain historical",
       "native_input_bytes": 238563328,
       "new_download_bytes": 0,
-      "peak_rss_bytes": 39288832,
+      "peak_rss_bytes": 37732352,
       "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
       "python": "3.14.7",
       "sqlite": "3.53.4"
     },
     {
-      "elapsed_seconds": 5.068770375102758,
+      "elapsed_seconds": 5.547425500117242,
       "generated_bytes": 37921794,
       "measurement_scope": "new metadata packaging only; original capture/build receipts remain historical",
       "native_input_bytes": 238563328,
       "new_download_bytes": 0,
-      "peak_rss_bytes": 37519360,
+      "peak_rss_bytes": 36995072,
       "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
       "python": "3.14.7",
       "sqlite": "3.53.4"

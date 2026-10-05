@@ -76,12 +76,23 @@ compressed stream segments, not individually decodable gzip files. Every
 physical file remains within the existing 25 MiB guard. Encoded aggregate,
 decoded SQLite and individual chunk sizes/checksums are all checked.
 
+The checker requires an explicit original source commit and an authority
+resolver backed by a local provider Git repository. It verifies regular bounded
+Git blobs for the original receipt, model/binding/source/attribution metadata
+and exact generator script, cross-links the preserved generation/proof, and
+requires the complete distributable artifact set. CI supplies the original
+source revision and fetches its immutable history. A copied bundle alone cannot
+prove code/source authority; missing authority fails closed. These checks verify
+provenance associations and do not issue semantic acceptance.
+
 ```sh
 python3 scripts/package_artifacts.py build --database /private/path/ror.sqlite \
   --source-revision bbbec903248680caea04e68f94b9a957b6efc55b \
-  --generator-revision 782df3e99a45a4fd8d3048cab28dbcb120cd0e29 \
+  --generator-revision 76e423f6b83d6cb8a11aed4fd982aed26be3f4ec \
   --out /private/path/new-artifact-bundle
-python3 scripts/package_artifacts.py check
+python3 scripts/package_artifacts.py check \
+  --source-revision bbbec903248680caea04e68f94b9a957b6efc55b \
+  --authority-repository /path/to/provider-git-repository
 ```
 
 `source/artifact-packaging-resources.json` measures only this new packaging
