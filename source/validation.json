@@ -4,7 +4,7 @@
     "meaninggraph": "2 concepts,0 errors,0 warnings",
     "modelspec_json_twin": "equal",
     "modelspec_publish_lint": "0 errors,0 warnings",
-    "unittest": 8
+    "unittest": 10
   },
   "determinism": {
     "same_pinned_input_two_full_builds": {
@@ -22,8 +22,8 @@
   "full_rebuild_resources": [
     {
       "download_bytes": 37540961,
-      "elapsed_seconds": 5.177383041009307,
-      "peak_rss_bytes": 46743552,
+      "elapsed_seconds": 5.748780416790396,
+      "peak_rss_bytes": 47644672,
       "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
       "python": "3.14.7",
       "sqlite": "3.53.4",
@@ -31,8 +31,8 @@
     },
     {
       "download_bytes": 37540961,
-      "elapsed_seconds": 5.364988999906927,
-      "peak_rss_bytes": 46530560,
+      "elapsed_seconds": 5.620707833673805,
+      "peak_rss_bytes": 46268416,
       "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
       "python": "3.14.7",
       "sqlite": "3.53.4",
@@ -58,6 +58,18 @@
     "combined W1 download/temp/RSS/elapsed budget receipt"
   ],
   "outcome": "source implemented; review and publication pending",
+  "review_r1_fix": {
+    "checksum_authority": "https://github.com/ror-community/ror-api/blob/bd040a0d2558a478c06a89118a29eeb9b6142710/rorapi/management/commands/generaterorid.py",
+    "fresh_r2": "pending",
+    "majors_fixed": [
+      "recursive duplicate JSON keys and nonfinite/overflow rejection; serializer allow_nan=false",
+      "canonical full ROR URL + Crockford checksum; projected scalar/container validation before SQLite"
+    ],
+    "negative_cases": "invalid JSON and projected types reached after a valid prefix; output and stage absent on each refusal; valid absent relationship remains counted",
+    "review_md_sha256": "6c0386f2701136d9186cb1ad699612f5b2a2eef4286f4945dd322bee3f32d452",
+    "reviewed_head": "056741bf4600862685fb5081ebfcbc58b112e6d9",
+    "ror_identifier_authority": "https://ror.readme.io/docs/identifier"
+  },
   "snapshot": {
     "counts": {
       "locations": 141722,
@@ -83,7 +95,7 @@
         "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
       }
     },
-    "parser_sha256": "4c9b507975c0c8dd2f5f36ac2cf5009f819bd3b736ee83a8a87590b24c1c4903",
+    "parser_sha256": "2ff1bc52de2d0fd10376a26972c45c12800bdadd2a16576d28c23a45b73aaea3",
     "projection": {
       "array_ordinals": "zero-based original order",
       "geonames_ids": "numeric sorted distinct positive native IDs, LF",

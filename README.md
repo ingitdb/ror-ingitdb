@@ -19,7 +19,10 @@ python3 -m unittest discover -s tests -v
 ```
 
 The importer streams one JSON record at a time into disk-backed SQLite and
-refuses source hash/count/key/resource failures. It stages a fresh output and
+refuses source hash/count/key/resource failures, recursive duplicate JSON keys,
+non-finite/overflow numbers and projected field type errors. Native ROR URLs
+must match the [official identifier pattern](https://ror.readme.io/docs/identifier)
+and checksum; no SQLite scalar coercion supplies missing type validity. It stages a fresh output and
 publishes it by rename only after validation; failures preserve the prior
 snapshot. Existing output directories are refused. Refresh is a monthly
 reviewed snapshot; a failed refresh leaves the explicitly stale last-known-good

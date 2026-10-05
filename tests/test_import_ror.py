@@ -1,4 +1,5 @@
 import hashlib
+import copy
 import importlib.util
 import io
 import json
@@ -32,12 +33,65 @@ class ImportTests(unittest.TestCase):
 
     def fixture(self, records=None):
         payload = json.dumps(records if records is not None else [self.record], ensure_ascii=False).encode()
+        return self.fixture_payload(payload, len(records) if records is not None else 1)
+
+    def fixture_payload(self, payload, count):
         archive = self.root / "input.zip"
         with zipfile.ZipFile(archive, "w") as z:
             z.writestr("input.json", payload)
         pin = {"archive_bytes": archive.stat().st_size, "archive_sha256": importer.digest(archive), "member": "input.json",
-               "member_bytes": len(payload), "member_sha256": hashlib.sha256(payload).hexdigest(), "organizations": len(records) if records is not None else 1}
+               "member_bytes": len(payload), "member_sha256": hashlib.sha256(payload).hexdigest(), "organizations": count}
         return archive, pin
+
+    def assert_refused_cleanly(self, archive, pin, name):
+        with self.assertRaises(ValueError):
+            importer.build(archive, pin, self.root / name)
+        self.assertFalse((self.root / name).exists())
+        self.assertFalse(list(self.root.glob(".ror-build-*")))
+
+    def test_duplicate_and_nonfinite_json_fail_after_valid_prefix(self):
+        valid = json.dumps(self.record)
+        for number, token in enumerate([
+            '{"id":"https://ror.org/05dxps055","status":"active","status":"withdrawn","locations":[],"relationships":[]}',
+            '{"id":"https://ror.org/05dxps055","status":"active","locations":[],"relationships":[],"x":{"nested":{"same":1,"same":2}}}',
+            *[valid.replace('"inactive"', '"active"').replace('"future_source_field":', f'"number":{bad},"future_source_field":')
+              for bad in ["NaN", "Infinity", "-Infinity", "1e400", "-1e400"]],
+            valid.replace('"preserve":', '"nested_number":1e400,"preserve":'),
+        ]):
+            with self.subTest(token=token):
+                archive, pin = self.fixture_payload(("[" + valid + "," + token + "]").encode(), 2)
+                self.assert_refused_cleanly(archive, pin, f"invalid-json-{number}")
+        with self.assertRaises(ValueError):
+            importer.canonical({"nested": [float("nan")]})
+        with self.assertRaises(ValueError):
+            importer.canonical({"nested": [float("inf")]})
+
+    def test_projected_types_and_complete_native_ids_fail_without_coercion(self):
+        mutations = []
+        for bad_id in ["https://ror.org/", "https://ror.org/02mhbdp94?x=1", "https://ror.org/02mhbdp94#x",
+                       "https://ror.org/02mhbdp94/", "http://ror.org/02mhbdp94", "02mhbdp94",
+                       "https://ror.org/02MHBDP94", "https://ror.org/0|mhbdp94", "https://ror.org/02mhbdp95", 123, None]:
+            mutations.extend([("id", bad_id), ("relationships.0.id", bad_id)])
+        mutations.extend([
+            ("status", False), ("status", ""), ("locations", {}), ("relationships", {}),
+            ("locations.0", False), ("locations.0.geonames_details", []), ("locations.0.geonames_id", True),
+            ("relationships.0", "not object"), ("relationships.0.type", False), ("relationships.0.type", None),
+            ("relationships.0.label", 7), ("relationships.0.label", []),
+        ])
+        for number, (path, value) in enumerate(mutations):
+            with self.subTest(path=path, value=value):
+                invalid = copy.deepcopy(self.record)
+                container = invalid
+                parts = path.split(".")
+                for part in parts[:-1]:
+                    container = container[int(part)] if isinstance(container, list) else container[part]
+                key = int(parts[-1]) if isinstance(container, list) else parts[-1]
+                container[key] = value
+                # Invalid row is reached after a valid organization has been inserted.
+                valid = copy.deepcopy(self.record)
+                valid["id"] = "https://ror.org/05dxps055"
+                archive, pin = self.fixture([valid, invalid])
+                self.assert_refused_cleanly(archive, pin, f"invalid-types-{number}")
 
     def test_full_shape_status_and_location_multiplicity(self):
         archive, pin = self.fixture()

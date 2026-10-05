@@ -4,10 +4,12 @@ import argparse
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import platform
 import resource
+import re
 import shutil
 import sqlite3
 import sys
@@ -18,6 +20,9 @@ import zipfile
 LIMIT_DB = 256 * 1024**2
 LIMIT_RSS = 512 * 1024**2
 LIMIT_METADATA = 2 * 1024**2
+# https://ror.readme.io/docs/identifier; Crockford alphabet excludes i,l,o,u.
+ROR_URL = re.compile(r"https://ror\.org/0[0-9a-hjkmnp-tv-z]{6}[0-9]{2}")
+CROCKFORD = "0123456789abcdefghjkmnpqrstvwxyz"
 SCHEMA = """
 CREATE TABLE organizations(id TEXT PRIMARY KEY NOT NULL, status TEXT NOT NULL, raw_json TEXT NOT NULL);
 CREATE TABLE locations(organization_id TEXT NOT NULL REFERENCES organizations(id), ordinal INTEGER NOT NULL,
@@ -32,7 +37,64 @@ CREATE INDEX relationships_id ON relationships(id);
 
 
 def canonical(value):
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON object key: {key}")
+        result[key] = value
+    return result
+
+
+def finite_float(token):
+    value = float(token)
+    if not math.isfinite(value):
+        raise ValueError("non-finite or overflowing JSON number")
+    return value
+
+
+def reject_constant(token):
+    raise ValueError(f"non-JSON numeric constant: {token}")
+
+
+def validate_ror_id(value):
+    if not isinstance(value, str) or ROR_URL.fullmatch(value) is None:
+        raise ValueError("invalid canonical native ROR identifier URL")
+    unique = value.removeprefix("https://ror.org/")
+    number = 0
+    for character in unique[1:7]:
+        number = number * 32 + CROCKFORD.index(character)
+    # ROR's documented generator uses ISO 7064 MOD 97-10 over the decoded value.
+    if int(unique[-2:]) != 98 - (number * 100) % 97:
+        raise ValueError("invalid native ROR identifier checksum")
+
+
+def field(container, name, datatype, nonempty=False):
+    value = container.get(name)
+    if not isinstance(value, datatype) or (nonempty and not value):
+        raise ValueError(f"invalid projected source field: {name}")
+    return value
+
+
+def validate_record(record):
+    validate_ror_id(field(record, "id", str))
+    field(record, "status", str, nonempty=True)
+    for location in field(record, "locations", list):
+        if not isinstance(location, dict) or "geonames_id" not in location:
+            raise ValueError("location must be an object with geonames_id")
+        gid = location["geonames_id"]
+        if gid is not None and (type(gid) is not int or gid <= 0):
+            raise ValueError("GeoNames ID must be native positive integer or null")
+        field(location, "geonames_details", dict)
+    for relationship in field(record, "relationships", list):
+        if not isinstance(relationship, dict):
+            raise ValueError("relationship must be an object")
+        validate_ror_id(field(relationship, "id", str))
+        field(relationship, "type", str, nonempty=True)
+        field(relationship, "label", str)
 
 
 def digest(path):
@@ -42,7 +104,7 @@ def digest(path):
 
 def records(stream):
     """Strict JSON array parser, retaining only one record and a bounded read buffer."""
-    decoder = json.JSONDecoder()
+    decoder = json.JSONDecoder(object_pairs_hook=unique_object, parse_float=finite_float, parse_constant=reject_constant)
     buffer = ""
     eof = False
 
@@ -137,18 +199,13 @@ def build(archive, pin, output):
                 statuses = {}
                 with source.open(pin["member"]) as stream:
                     for record in records(io.TextIOWrapper(stream, encoding="utf-8")):
+                        validate_record(record)
                         native_id, status = record["id"], record["status"]
-                        if not isinstance(native_id, str) or not native_id.startswith("https://ror.org/"):
-                            raise ValueError("invalid native ROR identifier URL")
-                        if not isinstance(status, str) or not status:
-                            raise ValueError("invalid source status")
                         db.execute("INSERT INTO organizations VALUES (?,?,?)", (native_id, status, canonical(record)))
                         counts["organizations"] += 1
                         statuses[status] = statuses.get(status, 0) + 1
                         for ordinal, location in enumerate(record["locations"]):
                             gid = location["geonames_id"]
-                            if gid is not None and (type(gid) is not int or gid <= 0):
-                                raise ValueError("GeoNames ID must be native positive integer or null")
                             db.execute("INSERT INTO locations VALUES (?,?,?,?)",
                                        (native_id, ordinal, gid, canonical(location["geonames_details"])))
                             counts["locations"] += 1
