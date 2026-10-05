@@ -1,0 +1,85 @@
+{
+  "contracts": [
+    {
+      "decision": {
+        "document": {
+          "path": "spec/research/public-data-fabric/evidence/w1-ror-user-decision.json",
+          "repository": "https://github.com/datatug/datatug",
+          "revision": "17263dbacabdfe95e53fc3c6980177416bdab941",
+          "sha256": "a4caa4b6461230a3fa2ae8548121344cb286cfb98a9e19761a207c9f74479595"
+        },
+        "scope": "w1-ror-user-native-url"
+      },
+      "execution": "native-identifier",
+      "native": {
+        "dataset": {
+          "path": "ror.sqlite",
+          "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
+        },
+        "provenance": {
+          "path": "source/validation.json",
+          "sha256": "06aa20ec30551b5eeeca02acdec95da3ebcfdd92524e3048e9d9f6a47d00c6fe"
+        }
+      },
+      "policy": {
+        "cardinality": "zero-or-one",
+        "collision": "ineligible",
+        "equality": "utf8-byte-exact",
+        "transform": "identity",
+        "unmatched": "exception"
+      },
+      "source": {
+        "data": {
+          "path": "libs/datatug/main/src/lib/queries/fixtures/public-data-fabric/affiliations.json",
+          "repository": "https://github.com/datatug/datatug-apps",
+          "revision": "e7362033ec79c6663d7dbe0483b62fab01f7b9cd",
+          "sha256": "44a30dd260c74f43b2138934cca0bccd493c7b804e124c5ecbded3c41226e543"
+        },
+        "datatype": "string",
+        "entity": "Affiliation",
+        "module": "affiliations",
+        "namespace": "ROR:URL",
+        "property": "ror_id",
+        "schema": {
+          "path": "libs/datatug/main/src/lib/queries/fixtures/public-data-fabric/affiliations.modelspec.json",
+          "repository": "https://github.com/datatug/datatug-apps",
+          "revision": "e7362033ec79c6663d7dbe0483b62fab01f7b9cd",
+          "sha256": "cfe958f12d9a70bb7533499b76bf01c9447f81f0862852e460b095bb75e1b9cf"
+        }
+      },
+      "target": {
+        "binding": {
+          "concept": "research-organization",
+          "document": {
+            "path": "model/ror.meaning.yaml",
+            "sha256": "70e54d63b0d564edc73149154f84374cdff30a17b8631c56ecab06dd93d452e9"
+          },
+          "meaning": {
+            "concept": "organization",
+            "document": {
+              "path": "identity.meaning.yaml",
+              "repository": "https://github.com/meaninggraph/core",
+              "revision": "982916d73f0a35ff2558b0062f58aa3ac4f24d97",
+              "sha256": "b0eb207d1e2e68572a47b4a08d02aa10389e2788c20a9796c812a4fcda894c33"
+            }
+          },
+          "role": "identifier"
+        },
+        "datatype": "string",
+        "entity": "organizations",
+        "model": {
+          "path": "model/ror.modelspec.json",
+          "sha256": "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"
+        },
+        "module": "ror",
+        "namespace": "ROR:URL",
+        "property": "id",
+        "snapshot": {
+          "path": "source/artifact-snapshot.json",
+          "sha256": "5520cfab8294336fbd98e8c1b4d3f732dffa88249ad58a15743f225cbaf15279"
+        }
+      }
+    }
+  ],
+  "format": "ovdb-representation-contract/3"
+}
