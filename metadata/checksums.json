@@ -10,8 +10,8 @@
       "sha256": "da757a09230b191d809a27e0944033de8b0cd63099f3bf03ce7cda06abc59262"
     },
     "OVDB.md": {
-      "bytes": 2332,
-      "sha256": "c6bc8384e87381d32bf220ccbcbb19c49b962b1252f64210153d6ce5306f85c1"
+      "bytes": 2464,
+      "sha256": "6113c6ff1063614b5d9f2c9370b6de3e4ac59ef199ac7c732e8fd9d79462316c"
     },
     "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001": {
       "bytes": 20971520,
