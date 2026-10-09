@@ -1,16 +1,16 @@
 {
-  "modelspec": "1.0-draft",
+  "modelspec": "1.0-draft-2",
   "module": {
     "id": "github.com/ingitdb/ror-ingitdb/model/ror",
     "name": "ror",
     "version": "0.1.0"
   },
-  "entities": {
+  "records": {
     "organizations": {
       "key": [
         "id"
       ],
-      "properties": {
+      "fields": {
         "id": {
           "type": "string",
           "required": true
@@ -30,9 +30,9 @@
         "organization_id",
         "ordinal"
       ],
-      "properties": {
+      "fields": {
         "organization_id": {
-          "entity": "organizations",
+          "record": "organizations",
           "required": true
         },
         "ordinal": {
@@ -53,9 +53,9 @@
         "organization_id",
         "ordinal"
       ],
-      "properties": {
+      "fields": {
         "organization_id": {
-          "entity": "organizations",
+          "record": "organizations",
           "required": true
         },
         "ordinal": {
@@ -67,7 +67,7 @@
           "required": true
         },
         "id": {
-          "entity": "organizations",
+          "record": "organizations",
           "required": true
         },
         "label": {

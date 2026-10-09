@@ -4,60 +4,60 @@
 # raw_json is lossless JSON shape with canonical serialization, including names,
 # external_ids, links, types, locations, relationships and administrative metadata.
 # Model licence: CC0-1.0.
-entity "organizations" {
+record "organizations" {
   key = ["id"]
-  property "id" {
+  field "id" {
     type = "string"
     required = true
   }
-  property "status" {
+  field "status" {
     type = "string"
     required = true
   }
-  property "raw_json" {
-    type = "string"
-    required = true
-  }
-}
-
-entity "locations" {
-  key = ["organization_id", "ordinal"]
-  property "organization_id" {
-    entity = "organizations"
-    required = true
-  }
-  property "ordinal" {
-    type = "int"
-    required = true
-  }
-  property "geonames_id" {
-    type = "int"
-  }
-  property "geonames_details_json" {
+  field "raw_json" {
     type = "string"
     required = true
   }
 }
 
-entity "relationships" {
+record "locations" {
   key = ["organization_id", "ordinal"]
-  property "organization_id" {
-    entity = "organizations"
+  field "organization_id" {
+    record = "organizations"
     required = true
   }
-  property "ordinal" {
+  field "ordinal" {
     type = "int"
     required = true
   }
-  property "type" {
+  field "geonames_id" {
+    type = "int"
+  }
+  field "geonames_details_json" {
     type = "string"
     required = true
   }
-  property "id" {
-    entity = "organizations"
+}
+
+record "relationships" {
+  key = ["organization_id", "ordinal"]
+  field "organization_id" {
+    record = "organizations"
     required = true
   }
-  property "label" {
+  field "ordinal" {
+    type = "int"
+    required = true
+  }
+  field "type" {
+    type = "string"
+    required = true
+  }
+  field "id" {
+    record = "organizations"
+    required = true
+  }
+  field "label" {
     type = "string"
     required = true
   }
