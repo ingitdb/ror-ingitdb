@@ -18,7 +18,7 @@
         },
         "provenance": {
           "path": "source/validation.json",
-          "sha256": "06aa20ec30551b5eeeca02acdec95da3ebcfdd92524e3048e9d9f6a47d00c6fe"
+          "sha256": "1dd8564086cd8a2853be2ad8440e0267c76a6dc6b243dc28654f3010f725f8ca"
         }
       },
       "policy": {
@@ -69,14 +69,14 @@
         "entity": "organizations",
         "model": {
           "path": "model/ror.modelspec.json",
-          "sha256": "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"
+          "sha256": "318cb63f7dfa7c69c46c457b0deae309f518ba9523e2c8d586951cd78688f907"
         },
         "module": "ror",
         "namespace": "ROR:URL",
         "property": "id",
         "snapshot": {
           "path": "source/artifact-snapshot.json",
-          "sha256": "5520cfab8294336fbd98e8c1b4d3f732dffa88249ad58a15743f225cbaf15279"
+          "sha256": "85cd808a48295bda0fa9f19f81487e1a2b5b12b8cd217dddc79b7a559d42c5bf"
         }
       }
     }

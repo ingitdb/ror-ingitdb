@@ -59,7 +59,7 @@
     "entity": "organizations",
     "model": {
       "path": "model/ror.modelspec.json",
-      "sha256": "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"
+      "sha256": "318cb63f7dfa7c69c46c457b0deae309f518ba9523e2c8d586951cd78688f907"
     },
     "module": "ror",
     "namespace": "ROR:URL",
