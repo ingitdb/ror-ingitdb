@@ -13,6 +13,9 @@ import zipfile
 spec = importlib.util.spec_from_file_location("import_ror", Path(__file__).parents[1] / "scripts/import_ror.py")
 importer = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(importer)
+reader_spec = importlib.util.spec_from_file_location("modelspec_reader", Path(__file__).parents[1] / "scripts/modelspec_reader.py")
+reader = importlib.util.module_from_spec(reader_spec)
+reader_spec.loader.exec_module(reader)
 audit_spec = importlib.util.spec_from_file_location("verify_source", Path(__file__).parents[1] / "scripts/verify_source.py")
 verifier = importlib.util.module_from_spec(audit_spec)
 audit_spec.loader.exec_module(verifier)
@@ -127,10 +130,10 @@ class ImportTests(unittest.TestCase):
         importer.build(archive, pin, self.root / "out")
         model = json.loads((Path(__file__).parents[1] / "model/ror.modelspec.json").read_text())
         with sqlite3.connect(self.root / "out/ror.sqlite") as db:
-            for table, entity in model["entities"].items():
+            for table, entity in reader.record_types(model).items():
                 columns = {row[1]: row for row in db.execute(f"PRAGMA table_info({table})")}
-                self.assertEqual(set(columns), set(entity["properties"]))
-                for name, prop in entity["properties"].items():
+                self.assertEqual(set(columns), set(reader.members(model, entity)))
+                for name, prop in reader.members(model, entity).items():
                     self.assertEqual(columns[name][2], "INTEGER" if prop.get("type") == "int" else "TEXT")
 
     def test_hash_count_and_duplicate_fail_without_partial_output(self):

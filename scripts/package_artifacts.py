@@ -27,6 +27,9 @@ FILES = ["model/ror.modelspec.json", "model/ror.modelspec.hcl", "model/ror.meani
 loader = importlib.util.spec_from_file_location("source_importer", Path(__file__).with_name("import_ror.py"))
 source_importer = importlib.util.module_from_spec(loader)
 loader.loader.exec_module(source_importer)
+reader_loader = importlib.util.spec_from_file_location("modelspec_reader", Path(__file__).with_name("modelspec_reader.py"))
+modelspec_reader = importlib.util.module_from_spec(reader_loader)
+reader_loader.loader.exec_module(modelspec_reader)
 
 
 def digest(path):
@@ -96,8 +99,8 @@ def committed_generator(root, revision):
 
 def model_key(root):
     model = read_json(safe_path(root, "model/ror.modelspec.json"))
-    entity = model.get("entities", {}).get("organizations", {})
-    prop = entity.get("properties", {}).get("id", {})
+    entity = modelspec_reader.record_types(model).get("organizations", {})
+    prop = modelspec_reader.members(model, entity).get("id", {})
     if model.get("module", {}).get("name") != "ror" or entity.get("key") != ["id"] or prop.get("type") != "string" or prop.get("required") is not True:
         raise ValueError("model must declare organizations.id as required string native key")
 

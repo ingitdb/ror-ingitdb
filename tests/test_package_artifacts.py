@@ -11,6 +11,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from modelspec_spellings import both
+
 ROOT = Path(__file__).parents[1]
 spec = importlib.util.spec_from_file_location("package_artifacts", ROOT / "scripts/package_artifacts.py")
 packager = importlib.util.module_from_spec(spec)
@@ -176,6 +178,23 @@ class PackagingTests(unittest.TestCase):
                 # Restore the complete independent fixture for the next mutation.
                 self.tearDown()
                 self.setUp()
+
+    def test_model_key_reads_either_vocabulary_and_refuses_a_mixed_document(self):
+        path = self.root / "model/ror.modelspec.json"
+        earlier, current = both(json.loads(path.read_text()))
+        mixed = dict(current, modelspec="1.0-draft")
+        for label, model, message in [("earlier", earlier, None), ("current", current, None),
+                                      ("mixed", mixed, '"records" belongs to format 1.0-draft-2'),
+                                      ("removed", dict(earlier, recordsets={}), '"recordsets" was removed'),
+                                      ("reserved", dict(current, projections={}), '"projections" is a reserved word'),
+                                      ("neither", {"modelspec": "1.0-draft-2", "module": earlier["module"]}, "required string native key")]:
+            path.write_text(json.dumps(model))
+            with self.subTest(label=label):
+                if message is None:
+                    packager.model_key(self.root)
+                else:
+                    with self.assertRaisesRegex(ValueError, message):
+                        packager.model_key(self.root)
 
     def test_committed_generator_and_staging_cleanup_controls(self):
         with patch.object(packager, "git_blob", return_value=b"different"):
