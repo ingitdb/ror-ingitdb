@@ -22,19 +22,19 @@
   "localId": "ror",
   "meaning": {
     "id": "meaning://github.com/ingitdb/ror-ingitdb",
-    "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/model/ror.meaning.yaml"
+    "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/c706831d1e73b9ac9913940e0c5bbdb485f68501/model/ror.meaning.yaml"
   },
   "model": {
-    "hclUrl": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/model/ror.modelspec.hcl",
+    "hclUrl": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/c706831d1e73b9ac9913940e0c5bbdb485f68501/model/ror.modelspec.hcl",
     "id": "modelspec://github.com/ingitdb/ror-ingitdb/ror",
-    "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/model/ror.modelspec.json"
+    "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/c706831d1e73b9ac9913940e0c5bbdb485f68501/model/ror.modelspec.json"
   },
   "provenance": {
     "license": "CC0-1.0 AND CC-BY-4.0",
     "notes": "Unchanged generated native SQLite, reconstructed only from the accepted ordered chunks. The logical SQLite path is not a hosted download file. Original upstream inputs, generator, hashes and coverage remain in source/artifact-snapshot.json and its referenced source receipts. Serving artifacts and public query proof have separate future receipts.",
     "path": "ror.sqlite",
     "repository": "https://github.com/ingitdb/ror-ingitdb",
-    "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+    "revision": "c706831d1e73b9ac9913940e0c5bbdb485f68501",
     "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
   },
   "publisher": {

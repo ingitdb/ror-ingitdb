@@ -85,10 +85,38 @@ source revision and fetches its immutable history. A copied bundle alone cannot
 prove code/source authority; missing authority fails closed. These checks verify
 provenance associations and do not issue semantic acceptance.
 
+The model's two files (`model/ror.modelspec.json` and `.hcl`) are the one exception
+to the byte-for-byte comparison with the source authority. They were accepted there
+in ModelSpec's earlier vocabulary (`entity`, `property`); ModelSpec has since renamed
+those words to `record` and `field`, and the files in this repository are written
+in the current vocabulary. The packager and the checker accept the two files in
+exactly two states: the authority's bytes, or the exact rename of those bytes, both
+files in the same state. The rename is recomputed by `scripts/modelspec_reader.py`
+from the authority's bytes and compared with the SHA-256 of what the reference tool
+(`modelspec rewrite` 0.2.0) writes, so one file renamed without the other, a rename
+with any other change, or a model that mixes the two vocabularies is refused. The
+source authority itself did not move. The repository's owner approved this rule on
+2026-10-09.
+
+The package was rebuilt once for the renamed model, at packaging tool revision
+`60e9905c7834d5f48d184a7dbb9a755d717d6ccc`, from the SQLite reconstructed from the
+committed chunks. The chunks, the source pin, the licence and the meaning file are
+byte for byte what they were. `source/artifact-snapshot.json` now pins the renamed
+model files, and the `native_key` in `source/validation.json` names the renamed
+model's SHA-256; the embedded original generation snapshot is unchanged.
+
+The deployment wrappers written by `scripts/generate_deployment.py` name the provider
+revision whose files they describe. That revision moved to
+`c706831d1e73b9ac9913940e0c5bbdb485f68501`, the commit that holds the renamed model
+and the rebuilt package, so the chunk links in `metadata/artifact.json` and the model
+links in `ovdb-database.json` serve the files this repository describes. That
+generator's own check is unchanged: every input must equal its Git blob at the
+revision it names.
+
 ```sh
 python3 scripts/package_artifacts.py build --database /private/path/ror.sqlite \
   --source-revision bbbec903248680caea04e68f94b9a957b6efc55b \
-  --generator-revision 76e423f6b83d6cb8a11aed4fd982aed26be3f4ec \
+  --generator-revision 60e9905c7834d5f48d184a7dbb9a755d717d6ccc \
   --out /private/path/new-artifact-bundle
 python3 scripts/package_artifacts.py check \
   --source-revision bbbec903248680caea04e68f94b9a957b6efc55b \

@@ -29,7 +29,7 @@ licences:
   meaning: CC0-1.0
 representation_contract:
   path: model/representations.json
-  sha256: 61c8c1f9297ac538e9cbd1b32806e4914799cf64bbeac89a71eb71b63c2559e6
+  sha256: 0ba485d0776649a2cdf3fd0fc6c286b090f19fa52b29bcd818909f40f9be5ab6
 recordsets:
   - locations
   - organizations

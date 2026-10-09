@@ -17,7 +17,7 @@ capacity proof before live publication. Final admission also requires independen
 carry-forward review and the released default OVDB publisher validator.
 
 `metadata/artifact.json` lists actual immutable chunk URLs, hashes, reconstruction
-instructions and attribution downloads at accepted provider revision `24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7`.
+instructions and attribution downloads at accepted provider revision `c706831d1e73b9ac9913940e0c5bbdb485f68501`.
 There is no physical download URL for `ror.sqlite`. Keep DATA-LICENSE.md
 with reconstructed/downloaded data. Data licence: `CC0-1.0 AND CC-BY-4.0`;
 code/model/meaning rights remain separate. The snapshot and model/meaning/representation

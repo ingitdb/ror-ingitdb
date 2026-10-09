@@ -11,7 +11,7 @@
     },
     "OVDB.md": {
       "bytes": 2464,
-      "sha256": "6113c6ff1063614b5d9f2c9370b6de3e4ac59ef199ac7c732e8fd9d79462316c"
+      "sha256": "bba5e31e4fe1a145a72bb9598469fd568f466c6c36c0c4bd017ccea637b8f7dc"
     },
     "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001": {
       "bytes": 20971520,
@@ -23,39 +23,39 @@
     },
     "manifest.json": {
       "bytes": 1453,
-      "sha256": "9fc35b5f44229fd2f098e3c590401bda9480cb4a8b3a2d1d3c480b14c71f40b9"
+      "sha256": "b636aa511e16b7b349250625e10cf15686308010a90c0251ea1a0f8f6be2ae2d"
     },
     "metadata/artifact.json": {
       "bytes": 2228,
-      "sha256": "12c31fbab44ba200acbe9fb2f791183c79a518805de12aa202d58793c253d16f"
+      "sha256": "a46e5b96ae6e9918493e8a0232338d52a7c5ca03832b52c94e2540b34c6be81f"
     },
     "metadata/contract.json": {
       "bytes": 7379,
-      "sha256": "8715e2cbe324f14a5ff892ef9ba76d146c611a59e3583c53155c73f050df3381"
+      "sha256": "3223c66783b23dd019c97cd003e10ca7fcbecb5c3ba07cb5ce7973491fdf6eed"
     },
     "model/representations.json": {
       "bytes": 3155,
-      "sha256": "61c8c1f9297ac538e9cbd1b32806e4914799cf64bbeac89a71eb71b63c2559e6"
+      "sha256": "0ba485d0776649a2cdf3fd0fc6c286b090f19fa52b29bcd818909f40f9be5ab6"
     },
     "model/ror.meaning.yaml": {
       "bytes": 2535,
       "sha256": "70e54d63b0d564edc73149154f84374cdff30a17b8631c56ecab06dd93d452e9"
     },
     "model/ror.modelspec.hcl": {
-      "bytes": 1412,
-      "sha256": "e0bac3b33bbc710adade33732224169643a5ba3a37d5110a8f6140a3bcccbbda"
+      "bytes": 1376,
+      "sha256": "0957bd47b4e1c210c6ac46cecb027649fb71676a96ba84daa7cc97b0310a8495"
     },
     "model/ror.modelspec.json": {
-      "bytes": 1567,
-      "sha256": "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"
+      "bytes": 1556,
+      "sha256": "318cb63f7dfa7c69c46c457b0deae309f518ba9523e2c8d586951cd78688f907"
     },
     "ovdb-database.json": {
       "bytes": 6159,
-      "sha256": "43594aa97e8069a4a13b153c3fc54464018c6901144c205eb31167822b1293af"
+      "sha256": "bb28cf8707806e8c43c80d3c55a4c2975b838c0ef4b9e7511afec2cfc8aa72e7"
     },
     "ovdb.yaml": {
       "bytes": 1300,
-      "sha256": "6e2be313adbca0517032696c4423a169961812bea4a55744d040caeb34eae8da"
+      "sha256": "7f481ad77bb9c826b208a73f41874cc7763c0afe0d3f701f8915336b382bb740"
     },
     "schemas/ovdb-database-draft-1.schema.json": {
       "bytes": 5371,
@@ -63,15 +63,15 @@
     },
     "source/artifact-packaging-resources.json": {
       "bytes": 1239,
-      "sha256": "36ca4da073368fb98d814d07c6d6f24a85bd67a8de93b6b8a44e6eb3aeb19b3f"
+      "sha256": "cb8f29d98bb0d196b335448aa690bf2abf23803aa334e4a6d304a485600d95c0"
     },
     "source/artifact-snapshot.json": {
       "bytes": 3186,
-      "sha256": "5520cfab8294336fbd98e8c1b4d3f732dffa88249ad58a15743f225cbaf15279"
+      "sha256": "85cd808a48295bda0fa9f19f81487e1a2b5b12b8cd217dddc79b7a559d42c5bf"
     },
     "source/representation-attachment.json": {
       "bytes": 123,
-      "sha256": "2565d414057fc7930e3df703f27326f58986e49a4a057b6d4b78e8c1d7e1692f"
+      "sha256": "a3921fabcb91a8e0090cabba60b176aeca72441d858e1fbacd1092568a0cf5cf"
     },
     "source/ror-v2.13.json": {
       "bytes": 764,
@@ -79,7 +79,7 @@
     },
     "source/validation.json": {
       "bytes": 6693,
-      "sha256": "06aa20ec30551b5eeeca02acdec95da3ebcfdd92524e3048e9d9f6a47d00c6fe"
+      "sha256": "1dd8564086cd8a2853be2ad8440e0267c76a6dc6b243dc28654f3010f725f8ca"
     }
   }
 }
