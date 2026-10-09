@@ -196,6 +196,54 @@ class PackagingTests(unittest.TestCase):
                     with self.assertRaisesRegex(ValueError, message):
                         packager.model_key(self.root)
 
+    def test_model_is_the_authoritys_file_or_its_exact_rename_and_nothing_else(self):
+        reader = packager.modelspec_reader
+        json_file, hcl_file = reader.MODEL_FILES
+        accepted = {path: packager.git_blob(ROOT, "bbbec903248680caea04e68f94b9a957b6efc55b", path) for path in reader.MODEL_FILES}
+        renamed = {path: reader.renamed(path, data) for path, data in accepted.items()}
+        self.authority.update(accepted)  # as the real authority: the accepted, earlier-vocabulary files
+
+        def place(root, files):
+            for path, data in files.items():
+                (root / path).write_bytes(data)
+
+        for label, files in {"accepted": accepted, "renamed": renamed}.items():
+            with self.subTest(state=label):
+                place(self.root, files)
+                snapshot, _ = self.package(label)
+                self.assertEqual(self.check(Path(self.temp.name) / label), snapshot)
+                proof = packager.read_json(Path(self.temp.name) / label / "source/validation.json")
+                self.assertEqual(proof["native_key"]["model"]["sha256"], hashlib.sha256(files[json_file]).hexdigest())
+        mixed = json.loads(renamed[json_file])
+        mixed["entities"] = mixed.pop("records")
+        refused = {
+            "only-json": {json_file: renamed[json_file], hcl_file: accepted[hcl_file]},
+            "only-hcl": {json_file: accepted[json_file], hcl_file: renamed[hcl_file]},
+            "one-more-change": {json_file: renamed[json_file], hcl_file: renamed[hcl_file] + b"# note\n"},
+            "mixed": {json_file: (json.dumps(mixed, indent=2) + "\n").encode(), hcl_file: renamed[hcl_file]},
+        }
+        bundle = Path(self.temp.name) / "renamed"
+        good = packager.read_json(bundle / "source/artifact-snapshot.json")
+        for label, files in refused.items():
+            with self.subTest(build=label):
+                place(self.root, files)
+                with self.assertRaisesRegex(ValueError, "neither the accepted file nor its exact rename"):
+                    self.package("refused-" + label)
+                self.assertFalse((Path(self.temp.name) / ("refused-" + label)).exists())
+            with self.subTest(check=label):
+                # Inside an otherwise valid bundle whose pins follow the files, the authority comparison still refuses.
+                place(bundle, files)
+                altered = copy.deepcopy(good)
+                for artifact in altered["artifacts"]:
+                    if artifact["path"] in files:
+                        artifact.update(bytes=len(files[artifact["path"]]), sha256=hashlib.sha256(files[artifact["path"]]).hexdigest())
+                packager.write_json(bundle / "source/artifact-snapshot.json", altered)
+                with self.assertRaisesRegex(ValueError, "neither the accepted file nor its exact rename"):
+                    self.check(bundle)
+        place(bundle, renamed)
+        packager.write_json(bundle / "source/artifact-snapshot.json", good)
+        self.assertEqual(self.check(bundle), good)
+
     def test_committed_generator_and_staging_cleanup_controls(self):
         with patch.object(packager, "git_blob", return_value=b"different"):
             with self.assertRaisesRegex(ValueError, "differs"):
