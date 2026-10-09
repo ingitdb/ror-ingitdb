@@ -254,10 +254,17 @@ def verify_bundle(root, *, source_revision=None, resolve=None):
         raise ValueError("preserved original receipt disagrees with source authority")
     if original["native_key_checks"].get("generation_provider") != {"repository": REPOSITORY, "revision": source_revision}:
         raise ValueError("native proof generation provider disagrees with source authority")
+    accepted_model = {}
     for path in FILES:
         data = resolve(REPOSITORY, source_revision, path)
-        if not isinstance(data, bytes) or len(data) > METADATA_LIMIT or safe_path(root, path).read_bytes() != data:
+        if not isinstance(data, bytes) or len(data) > METADATA_LIMIT:
             raise ValueError("mandatory metadata differs from original source authority")
+        if path in modelspec_reader.MODEL_FILES:
+            accepted_model[path] = data
+        elif safe_path(root, path).read_bytes() != data:
+            raise ValueError("mandatory metadata differs from original source authority")
+    # The model's two files are the authority's bytes or their exact rename; nothing else.
+    modelspec_reader.model_state(accepted_model, {path: safe_path(root, path).read_bytes() for path in accepted_model})
     if snapshot["counts"] != authority["snapshot"]["counts"]:
         raise ValueError("packaging counts disagree with original generation")
     if original["native_key_checks"].get("dataset_storage") != {"kind": "reconstructed", "encoding": "gzip", "decoded_path": "ror.sqlite"}:
@@ -318,9 +325,14 @@ def package(root, database, output, revision, source_revision, chunk_bytes=CHUNK
     current = read_json(safe_path(root, "source/validation.json"))
     if {k: v for k, v in current.items() if k not in ("native_key", "native_key_checks")} != original:
         raise ValueError("historical source-generation receipt changed")
+    accepted_model = {}
     for relative in [*FILES, "scripts/import_ror.py"]:
-        if git_blob(root, source_revision, relative) != safe_path(root, relative).read_bytes():
+        if relative in modelspec_reader.MODEL_FILES:
+            accepted_model[relative] = git_blob(root, source_revision, relative)
+        elif git_blob(root, source_revision, relative) != safe_path(root, relative).read_bytes():
             raise ValueError("source model/binding/licence/parser changed from reviewed pin")
+    # The model's two files are the reviewed pin's bytes or their exact rename; nothing else.
+    modelspec_reader.model_state(accepted_model, {path: safe_path(root, path).read_bytes() for path in accepted_model})
     proof = native_key(root, database, original)
     if output.exists():
         raise ValueError("output already exists")

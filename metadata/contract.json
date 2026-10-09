@@ -50,7 +50,7 @@
       "notes": "Unchanged generated native SQLite, reconstructed only from the accepted ordered chunks. The logical SQLite path is not a hosted download file. Original upstream inputs, generator, hashes and coverage remain in source/artifact-snapshot.json and its referenced source receipts. Serving artifacts and public query proof have separate future receipts.",
       "path": "ror.sqlite",
       "repository": "https://github.com/ingitdb/ror-ingitdb",
-      "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+      "revision": "c706831d1e73b9ac9913940e0c5bbdb485f68501",
       "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
     }
   },
@@ -66,7 +66,7 @@
       "notes": "Unchanged generated native SQLite, reconstructed only from the accepted ordered chunks. The logical SQLite path is not a hosted download file. Original upstream inputs, generator, hashes and coverage remain in source/artifact-snapshot.json and its referenced source receipts. Serving artifacts and public query proof have separate future receipts.",
       "path": "ror.sqlite",
       "repository": "https://github.com/ingitdb/ror-ingitdb",
-      "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+      "revision": "c706831d1e73b9ac9913940e0c5bbdb485f68501",
       "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
     },
     "tables": [

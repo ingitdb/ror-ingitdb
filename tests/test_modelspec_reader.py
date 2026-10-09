@@ -1,8 +1,10 @@
 """The ModelSpec JSON reader accepts both vocabularies and refuses a document whose keys disagree."""
 import copy
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
 import unittest
 
 from modelspec_spellings import both
@@ -146,6 +148,77 @@ class ReaderTests(unittest.TestCase):
         model["components"]["Audit"] = 3
         model["records"]["Customer"]["fields"] = None
         self.assertEqual(set(reader.record_types(model)), {"Order", "Customer"})
+
+
+# The commit the packaging check names as the original source authority (README, check.yml).
+SOURCE_AUTHORITY = "bbbec903248680caea04e68f94b9a957b6efc55b"
+JSON_FILE, HCL_FILE = reader.MODEL_FILES
+
+
+def authority_bytes(path):
+    return subprocess.run(["git", "-C", str(ROOT), "show", f"{SOURCE_AUTHORITY}:{path}"],
+                          check=True, capture_output=True).stdout
+
+
+class AcceptedStateTests(unittest.TestCase):
+    """The model is the accepted file or its exact rename; the rename is recomputed, not trusted."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.accepted = {path: authority_bytes(path) for path in reader.MODEL_FILES}
+        cls.renamed = {path: reader.renamed(path, cls.accepted[path]) for path in reader.MODEL_FILES}
+
+    def test_the_recomputed_rename_is_the_reference_tools_output(self):
+        for path in reader.MODEL_FILES:
+            with self.subTest(path=path):
+                self.assertNotEqual(self.renamed[path], self.accepted[path])
+                self.assertEqual(hashlib.sha256(self.renamed[path]).hexdigest(), reader.RENAMED_SHA256[path])
+        model = json.loads(self.renamed[JSON_FILE])
+        self.assertEqual(model["modelspec"], reader.CURRENT)
+        self.assertEqual(list(model), ["modelspec", "module", "records"])
+        self.assertEqual(reader.record_types(model).keys(), reader.record_types(json.loads(self.accepted[JSON_FILE])).keys())
+        text = self.renamed[HCL_FILE].decode()
+        self.assertNotRegex(text, r"(?m)^\s*(entity|property)\b")
+        self.assertEqual(text.count("record "), self.accepted[HCL_FILE].decode().count("entity "))
+
+    def test_the_committed_model_is_in_one_of_the_two_states(self):
+        current_files = {path: (ROOT / path).read_bytes() for path in reader.MODEL_FILES}
+        self.assertIn(reader.model_state(self.accepted, current_files), ("accepted", "renamed"))
+
+    def test_both_states_are_accepted(self):
+        self.assertEqual(reader.model_state(self.accepted, dict(self.accepted)), "accepted")
+        self.assertEqual(reader.model_state(self.accepted, dict(self.renamed)), "renamed")
+
+    def test_anything_else_is_refused(self):
+        renamed_json, renamed_hcl = self.renamed[JSON_FILE], self.renamed[HCL_FILE]
+        mixed = json.loads(renamed_json)
+        mixed["entities"] = mixed.pop("records")
+        cases = {
+            "only the JSON renamed": {JSON_FILE: renamed_json, HCL_FILE: self.accepted[HCL_FILE]},
+            "only the HCL renamed": {JSON_FILE: self.accepted[JSON_FILE], HCL_FILE: renamed_hcl},
+            "rename and a trailing byte": {JSON_FILE: renamed_json + b" ", HCL_FILE: renamed_hcl},
+            "rename and a changed type": {JSON_FILE: renamed_json, HCL_FILE: renamed_hcl.replace(b'"int"', b'"string"', 1)},
+            "rename and a changed flag": {JSON_FILE: renamed_json.replace(b'"required": true', b'"required": false', 1), HCL_FILE: renamed_hcl},
+            "mixed vocabulary": {JSON_FILE: (json.dumps(mixed, indent=2) + "\n").encode(), HCL_FILE: renamed_hcl},
+            "accepted and a trailing byte": {JSON_FILE: self.accepted[JSON_FILE], HCL_FILE: self.accepted[HCL_FILE] + b"\n"},
+            "empty files": {JSON_FILE: b"", HCL_FILE: b""},
+        }
+        for label, files in cases.items():
+            with self.subTest(case=label), self.assertRaisesRegex(ValueError, "neither the accepted file nor its exact rename"):
+                reader.model_state(self.accepted, files)
+
+    def test_a_rename_the_reference_tool_would_not_write_is_refused(self):
+        # Any other accepted bytes give a rename whose digest is not the pinned one.
+        other = self.accepted[JSON_FILE].replace(b'"ror"', b'"other"', 1)
+        with self.assertRaisesRegex(ValueError, "does not reproduce the reference tool's output"):
+            reader.renamed(JSON_FILE, other)
+        with self.assertRaisesRegex(ValueError, "neither the accepted file nor its exact rename"):
+            reader.model_state({JSON_FILE: other, HCL_FILE: self.accepted[HCL_FILE]},
+                               {JSON_FILE: reader.json_to_current(other), HCL_FILE: self.renamed[HCL_FILE]})
+        with self.assertRaisesRegex(ValueError, "not one of the model's two files"):
+            reader.renamed("model/ror.meaning.yaml", b"")
+        with self.assertRaisesRegex(ValueError, "both model files are required"):
+            reader.model_state({JSON_FILE: self.accepted[JSON_FILE]}, dict(self.renamed))
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
       "bytes": 1116,
       "path": "DATA-LICENSE.md",
       "sha256": "39d8853e3c9f9a7a96ea77edd1afe52ad25902f34a30855ad53c2c1aed62443b",
-      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/DATA-LICENSE.md"
+      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/c706831d1e73b9ac9913940e0c5bbdb485f68501/DATA-LICENSE.md"
     }
   ],
   "downloads": [
@@ -12,22 +12,22 @@
       "bytes": 20971520,
       "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001",
       "sha256": "dcbe231796b5d51307adb81ad5623b509ac5f055cd7a773f1706fbe0af1aa2c0",
-      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001"
+      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/c706831d1e73b9ac9913940e0c5bbdb485f68501/artifacts/ror-v2.13/native/ror.sqlite.gz.part-0001"
     },
     {
       "bytes": 16933001,
       "path": "artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002",
       "sha256": "bdc133c44b8c27552c0089495cf2d8ad9bcda0722cc2c092fb3498acf078b572",
-      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7/artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002"
+      "url": "https://raw.githubusercontent.com/ingitdb/ror-ingitdb/c706831d1e73b9ac9913940e0c5bbdb485f68501/artifacts/ror-v2.13/native/ror.sqlite.gz.part-0002"
     }
   ],
   "reconstruction": "Concatenate chunks in listed order, then decode the complete gzip stream; verify every chunk, encoded stream and decoded SQLite size and SHA256.",
   "repository": "https://github.com/ingitdb/ror-ingitdb",
-  "revision": "24bcbcb5f0ba715d72d604e9d4d296766e5f4ca7",
+  "revision": "c706831d1e73b9ac9913940e0c5bbdb485f68501",
   "snapshot": {
     "bytes": 3186,
     "path": "source/artifact-snapshot.json",
-    "sha256": "5520cfab8294336fbd98e8c1b4d3f732dffa88249ad58a15743f225cbaf15279"
+    "sha256": "85cd808a48295bda0fa9f19f81487e1a2b5b12b8cd217dddc79b7a559d42c5bf"
   },
   "sqlite": {
     "bytes": 37904521,

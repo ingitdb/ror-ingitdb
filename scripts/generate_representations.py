@@ -58,14 +58,14 @@ def build(root=ROOT):
                   data=external("datatug/datatug-apps", source_revision, schema_path.replace(".modelspec", ""),
                                 "44a30dd260c74f43b2138934cca0bccd493c7b804e124c5ecbded3c41226e543"),
                   module="affiliations", entity="Affiliation", property="ror_id", datatype="string", namespace="ROR:URL")
-    target = dict(snapshot=local("source/artifact-snapshot.json", "5520cfab8294336fbd98e8c1b4d3f732dffa88249ad58a15743f225cbaf15279"),
-                  model=local("model/ror.modelspec.json", "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"),
+    target = dict(snapshot=local("source/artifact-snapshot.json", "85cd808a48295bda0fa9f19f81487e1a2b5b12b8cd217dddc79b7a559d42c5bf"),
+                  model=local("model/ror.modelspec.json", "318cb63f7dfa7c69c46c457b0deae309f518ba9523e2c8d586951cd78688f907"),
                   module="ror", entity="organizations", property="id", datatype="string", namespace="ROR:URL",
                   binding=dict(document=local("model/ror.meaning.yaml", "70e54d63b0d564edc73149154f84374cdff30a17b8631c56ecab06dd93d452e9"),
                                concept="research-organization", role="identifier",
                                meaning=dict(document=external("meaninggraph/core", CORE, "identity.meaning.yaml", "b0eb207d1e2e68572a47b4a08d02aa10389e2788c20a9796c812a4fcda894c33"), concept="organization")))
     native = dict(dataset=dict(path="ror.sqlite", sha256="afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"),
-                  provenance=local("source/validation.json", "06aa20ec30551b5eeeca02acdec95da3ebcfdd92524e3048e9d9f6a47d00c6fe"))
+                  provenance=local("source/validation.json", "1dd8564086cd8a2853be2ad8440e0267c76a6dc6b243dc28654f3010f725f8ca"))
     decision = dict(document=external("datatug/datatug", "17263dbacabdfe95e53fc3c6980177416bdab941",
                                     "spec/research/public-data-fabric/evidence/w1-ror-user-decision.json",
                                     "a4caa4b6461230a3fa2ae8548121344cb286cfb98a9e19761a207c9f74479595"),

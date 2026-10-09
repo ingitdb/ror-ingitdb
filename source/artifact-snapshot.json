@@ -7,14 +7,14 @@
       "sha256": "afdf978130ee9899fedb698f0e9d18399efdea40ea92f01f26d6055ef1ed5d38"
     },
     {
-      "bytes": 1567,
+      "bytes": 1556,
       "path": "model/ror.modelspec.json",
-      "sha256": "9694a0b6d7aba0bd26be22e8ee3501cf944463617839623e6b5b15d8068fd0ae"
+      "sha256": "318cb63f7dfa7c69c46c457b0deae309f518ba9523e2c8d586951cd78688f907"
     },
     {
-      "bytes": 1412,
+      "bytes": 1376,
       "path": "model/ror.modelspec.hcl",
-      "sha256": "e0bac3b33bbc710adade33732224169643a5ba3a37d5110a8f6140a3bcccbbda"
+      "sha256": "0957bd47b4e1c210c6ac46cecb027649fb71676a96ba84daa7cc97b0310a8495"
     },
     {
       "bytes": 2535,
@@ -34,7 +34,7 @@
     {
       "bytes": 6693,
       "path": "source/validation.json",
-      "sha256": "06aa20ec30551b5eeeca02acdec95da3ebcfdd92524e3048e9d9f6a47d00c6fe"
+      "sha256": "1dd8564086cd8a2853be2ad8440e0267c76a6dc6b243dc28654f3010f725f8ca"
     },
     {
       "bytes": 20971520,
@@ -60,9 +60,9 @@
   "dataset_role": "unchanged native source projection; serving adapter has separate future checksums",
   "generator": {
     "repository": "https://github.com/ingitdb/ror-ingitdb",
-    "revision": "76e423f6b83d6cb8a11aed4fd982aed26be3f4ec",
+    "revision": "60e9905c7834d5f48d184a7dbb9a755d717d6ccc",
     "script": "scripts/package_artifacts.py",
-    "sha256": "001c65e7a69c5d413eab579d08fc2feccc23042404b1a04610d305a0f695b8ea"
+    "sha256": "0e37b4d07b45b1c439d6d77932259160314c27cb89e24d8eab1fed3d7fb29c34"
   },
   "source_generation": {
     "original_validation_sha256": "227a3da5cdd9762dd5e8149904a5e68705216f85acbfdd0128dc29dacadf7aeb",
