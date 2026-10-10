@@ -244,6 +244,56 @@ class PackagingTests(unittest.TestCase):
         packager.write_json(bundle / "source/artifact-snapshot.json", good)
         self.assertEqual(self.check(bundle), good)
 
+    def test_package_compares_each_non_model_file_with_the_reviewed_pin(self):
+        """One byte in a file the reviewed pin holds is refused by the comparison itself, not by a later check."""
+        (self.root / "scripts").mkdir(exist_ok=True)
+        shutil.copyfile(ROOT / "scripts/import_ror.py", self.root / "scripts/import_ror.py")
+        parser = (ROOT / "scripts/import_ror.py").read_bytes()  # the reviewed pin's parser; self.blob would echo the working copy
+
+        def reviewed(root, revision, relative):
+            return parser if relative == "scripts/import_ror.py" else self.blob(root, revision, relative)
+
+        def build(name):
+            with patch.object(packager, "committed_generator", return_value=self.generator), patch.object(packager, "git_blob", side_effect=reviewed):
+                return packager.package(self.root, self.database, Path(self.temp.name) / name, "a" * 40, "c" * 40, chunk_bytes=100)
+
+        build("control")  # the unaltered working tree packages, so a refusal below is caused by the altered byte
+        files = [path for path in (*packager.FILES, "scripts/import_ror.py") if path not in packager.modelspec_reader.MODEL_FILES]
+        self.assertEqual(files, ["model/ror.meaning.yaml", "source/ror-v2.13.json", "DATA-LICENSE.md", "scripts/import_ror.py"])
+        for relative in files:
+            path = self.root / relative
+            original = path.read_bytes()
+            path.write_bytes(original + b"\n")
+            try:
+                with self.subTest(file=relative), self.assertRaisesRegex(ValueError, "source model/binding/licence/parser changed from reviewed pin"):
+                    build("altered")
+            finally:
+                path.write_bytes(original)
+            self.assertFalse((Path(self.temp.name) / "altered").exists())
+
+    def test_verify_bundle_compares_each_non_model_file_with_the_source_authority(self):
+        """A file re-pinned to its altered bytes is refused by the authority comparison, not by a later check."""
+        snapshot, _ = self.package()
+        output = Path(self.temp.name) / "out"
+        self.assertEqual(self.check(output), snapshot)
+        snapshot_path = output / "source/artifact-snapshot.json"
+        for relative in [path for path in packager.FILES if path not in packager.modelspec_reader.MODEL_FILES]:
+            path = output / relative
+            original = path.read_bytes()
+            path.write_bytes(original + b"\n")
+            altered = copy.deepcopy(snapshot)
+            for artifact in altered["artifacts"]:
+                if artifact["path"] == relative:
+                    artifact.update(bytes=path.stat().st_size, sha256=packager.digest(path))
+            packager.write_json(snapshot_path, altered)
+            try:
+                with self.subTest(file=relative), self.assertRaisesRegex(ValueError, "mandatory metadata differs from original source authority"):
+                    self.check(output)
+            finally:
+                path.write_bytes(original)
+                packager.write_json(snapshot_path, snapshot)
+        self.assertEqual(self.check(output), snapshot)
+
     def test_committed_generator_and_staging_cleanup_controls(self):
         with patch.object(packager, "git_blob", return_value=b"different"):
             with self.assertRaisesRegex(ValueError, "differs"):
