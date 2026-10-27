@@ -137,7 +137,7 @@ def reconstruct(root, descriptor, output):
             raise ValueError("ordered encoded native hash mismatch")
         encoded.seek(0)
         decoded_hash, count = hashlib.sha256(), 0
-        with gzip.GzipFile(fileobj=encoded) as stream, Path(output).open("wb") as native:
+        with gzip.GzipFile(fileobj=encoded, mode="rb") as stream, Path(output).open("wb") as native:
             while block := stream.read(1024**2):
                 count += len(block)
                 if count > descriptor["decodedBytes"]:
